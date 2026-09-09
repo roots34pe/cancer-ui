@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option 11</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#fff;font-family:Arial,"Meiryo",sans-serif;font-size:13px;color:#111}
+.app{
+  display:grid;
+  grid-template-columns:110px minmax(390px,30%) minmax(390px,30%) minmax(520px,1fr);
+  gap:0;
+  width:100%;
+  min-height:100vh;
+  align-items:start;
+}
+.nav{
+  position:sticky;top:0;height:100vh;overflow:auto;
+  background:#5f91a8;padding:4px;
+  border-right:2px solid #fff;
+}
+.nav-title{background:#466f82;color:#fff;font-weight:bold;padding:8px 6px;margin-bottom:4px}
+.nav button{
+  width:100%;border:1px solid #fff;background:#79a7ba;color:#fff;
+  text-align:left;padding:7px 6px;margin:1px 0;cursor:pointer;font-size:12px;
+}
+.nav button:hover{background:#4f8198}
+.left,.info{padding:4px;min-width:0}
+.panel{border:1px solid #9dbdcc;margin-bottom:6px;background:#edf5f8}
+.head{
+  background:#6193a9;color:#fff;font-weight:bold;padding:6px 8px;
+  min-height:26px;display:flex;justify-content:space-between;align-items:center
+}
+.subhead{background:#8dcfbd;padding:5px 8px;font-weight:bold}
+.body{padding:6px}
+.row{display:flex;align-items:center;gap:7px;min-height:27px;padding:2px 3px}
+.row:nth-child(even){background:#e4f0f4}
+label{cursor:pointer}
+input[type=text],input[type=number]{
+  width:90px;height:24px;border:1px solid #a9c5d0;background:#fff;padding:3px 6px
+}
+input[type=radio],input[type=checkbox]{margin:0 5px 0 0;accent-color:#176ca1}
+textarea{
+  width:100%;min-height:100px;resize:vertical;border:1px solid #a9c5d0;
+  padding:7px;font-family:inherit
+}
+table{width:100%;border-collapse:collapse}
+th{background:#9f9f9f;color:#fff;text-align:left;padding:5px}
+td{padding:5px;border-bottom:1px solid #c7c7c7}
+tr:nth-child(even) td{background:#e5e5e5}
+.info .body{background:#eee}
+.info-text{line-height:1.55;white-space:pre-wrap}
+.stage{
+  display:grid;grid-template-columns:60px 1fr 60px 1fr 60px 1fr;
+  border:1px solid #9dbdcc;margin-bottom:6px
+}
+.stage div{padding:6px;background:#dcecf1;border-right:1px solid #fff}
+.stage .title{background:#6193a9;color:#fff;font-weight:bold}
+.report{
+  position:sticky;top:0;height:100vh;padding:4px;
+  min-width:0;display:flex;flex-direction:column
+}
+.report-panel{border:1px solid #9dbdcc;background:#fff;min-height:0}
+.report-head{
+  background:#6193a9;color:#fff;font-weight:bold;padding:6px 8px;
+  display:flex;justify-content:space-between
+}
+.report-box{
+  height:calc(100vh - 65px);min-height:400px;padding:10px;
+  white-space:pre-wrap;overflow:visible;background:#fff
+}
+.finding{margin-top:7px;border:1px solid #9dbdcc;background:#fff;flex:1;min-height:220px}
+.finding textarea{height:calc(100% - 28px);min-height:180px;border:0;resize:none}
+.copybar{display:flex;justify-content:flex-end;background:#e4f1f5;padding:4px}
+.copybtn,.clearbtn{
+  background:#5e8799;color:#fff;border:0;padding:8px 14px;cursor:pointer
+}
+.clearbtn{margin-left:auto}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.small{font-size:12px}
+.muted{color:#555}
+@media(max-width:1200px){
+ .app{grid-template-columns:100px 1fr 1fr 420px}
+}
+@media(max-width:900px){
+ .app{grid-template-columns:90px 1fr}
+ .report{grid-column:2;height:auto;position:relative}
+ .info{grid-column:2}
+ .report-box{height:500px}
+}
+</style>
+
+<style id="option11-final-30-30-40">
+/* =========================================================
+   OPTION 11 FINAL LAYOUT
+   Viewport = 100%
+   Input = 30%
+   Information = 30%
+   Report + Finding = 40%
+   No outer gap.
+   Input + Information use the same page scrollbar.
+   ========================================================= */
+
+*, *::before, *::after {
+  box-sizing: border-box !important;
+}
+
+html {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+}
+
+body {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+/* Remove ONLY the original navigation. */
+.app > .nav,
+.app > nav.nav {
+  display: none !important;
+}
+
+/* 100% viewport: 30 + 30 + 40 */
+.app {
+  width: 100vw !important;
+  min-width: 0 !important;
+  max-width: 100vw !important;
+  min-height: 100vh !important;
+  height: auto !important;
+
+  display: grid !important;
+  grid-template-columns: 30vw 30vw 40vw !important;
+  column-gap: 0 !important;
+  row-gap: 0 !important;
+  gap: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+  align-items: start !important;
+}
+
+/* EXACT 30% INPUT */
+.app > .left {
+  grid-column: 1 !important;
+  width: 30vw !important;
+  min-width: 30vw !important;
+  max-width: 30vw !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 4px !important;
+  overflow: visible !important;
+}
+
+/* EXACT 30% INFORMATION */
+.app > .info {
+  grid-column: 2 !important;
+  width: 30vw !important;
+  min-width: 30vw !important;
+  max-width: 30vw !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 4px !important;
+  overflow: visible !important;
+}
+
+/* Input + Information do NOT have their own scrollbars.
+   The browser page scrollbar moves both together. */
+.app > .left,
+.app > .info {
+  overflow-y: visible !important;
+  overflow-x: hidden !important;
+}
+
+/* EXACT 40% REPORT + FINDING */
+.app > .report {
+  grid-column: 3 !important;
+  width: 40vw !important;
+  min-width: 40vw !important;
+  max-width: 40vw !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  margin: 0 !important;
+  padding: 4px !important;
+
+  position: sticky !important;
+  top: 0 !important;
+  align-self: start !important;
+  overflow: hidden !important;
+}
+
+/* Report/finding stay inside the fixed 40% column. */
+.app > .report .report-panel,
+.app > .report .finding {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.app > .report .report-box {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.app > .report .finding {
+  margin-top: 7px !important;
+}
+
+/* Prevent old responsive rules from changing the desktop ratio. */
+@media (min-width: 901px) {
+  .app {
+    width: 100vw !important;
+    grid-template-columns: 30vw 30vw 40vw !important;
+    gap: 0 !important;
+  }
+
+  .app > .left {
+    width: 30vw !important;
+    max-width: 30vw !important;
+  }
+
+  .app > .info {
+    width: 30vw !important;
+    max-width: 30vw !important;
+  }
+
+  .app > .report {
+    width: 40vw !important;
+    max-width: 40vw !important;
+  }
+}
+</style>
+
+</head>
+<body>
+<div class="app">
+
+<nav class="nav">
+  <div class="nav-title">Option 11</div>
+  <button onclick="go('invasion')">浸潤</button>
+  <button onclick="go('nodes')">リンパ節</button>
+  <button onclick="go('pn')">pN / pMX</button>
+  <button onclick="go('regional')">頭頸部領域リンパ節</button>
+  <button onclick="go('notes')">特記事項・補足</button>
+</nav>
+
+<main class="left">
+
+  <section class="panel" id="invasion">
+    <div class="head">
+      <span>頭頸部癌取扱い規約</span><span>2018　第6版</span>
+    </div>
+    <div class="subhead">浸潤</div>
+    <div class="body">
+      <div class="row">
+        <label><input type="radio" name="invasion" value="輪状軟骨の尾側縁より上方">輪状軟骨の尾側縁より上方</label>
+        <label><input type="radio" name="side" value="一側">一側</label>
+        <input id="diameter" type="text" placeholder="">
+        <span>cm</span>
+      </div>
+      <div class="row">
+        <label><input type="radio" name="invasion" value="輪状軟骨の尾側縁より下方">輪状軟骨の尾側縁より下方</label>
+        <label><input type="radio" name="side" value="両側">両側</label>
+      </div>
+      <div class="row">
+        <label><input type="radio" name="invasion" value="頭頸部リンパ節転移">頭頸部リンパ節転移</label>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="nodes">
+    <div class="head"><span>リンパ節</span><span>転移数・郭清数</span></div>
+    <div class="body">
+      <table>
+        <thead><tr><th>番号</th><th>転移数</th><th>郭清数</th><th>名称</th></tr></thead>
+        <tbody id="nodeRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<section class="info">
+
+  <section class="panel" id="pn">
+    <div class="head"><span>中咽頭p16陽性　原発不明頸部リンパ節 HPV/p16陽性</span></div>
+    <div class="body">
+      <div class="two-col">
+        <div class="stage">
+          <div class="title">転移数</div><div class="title">郭清数</div>
+          <div>total</div><div><input id="totalMet" type="number" min="0"></div>
+          <div>pNX</div><div><input id="pnx" type="number" min="0"></div>
+        </div>
+        <div class="stage">
+          <div class="title">pMX(LYM)</div><div class="title"></div>
+          <div>pMX(LYM)</div><div><input id="pmx" type="number" min="0"></div>
+          <div>完成式</div><div id="formula">pN0 [total(0/0): (/)]</div>
+        </div>
+      </div>
+      <div class="copybar">
+        <button class="copybtn" onclick="copyPN()">pNX[(/)]をコピー</button>
+        <button class="clearbtn" onclick="clearInputs()">入力したデータを消す</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="regional">
+    <div class="head"><span>頭頸部領域リンパ節</span></div>
+    <div class="body">
+      <div class="info-text">◇ 所属リンパ節（regional lymph nodes；領域リンパ節） 日本癌治療学会リンパ節規約準拠（頭頸部癌規約第5版）
+
+！ 用語の不統一により領域リンパ節とされている。
+
+！ 正中のリンパ節は同側にふくめる。
+
+① 頭頸部リンパ節　cervical nodes
+　オトガイ下リンパ節　submental nodes
+　顎下リンパ節　submandibular nodes
+　腺前リンパ節　prelglandular nodes
+　血管前リンパ節　prevascular nodes
+　血管後リンパ節　retrovascular nodes
+　腺後リンパ節　retrogladular nodes
+　前頸部リンパ節　anterior nodes
+　前頸静脈リンパ節　anterior superficial cervical nodes
+　咽頭前リンパ節　prelaryngeal nodes
+　甲状腺前リンパ節　prethyroid nodes
+　気管前リンパ節　pretracheal nodes
+　気管傍リンパ節　paratracheal nodes
+　咽頭周囲リンパ節　para-and retropharyngeal nodes
+　側頸リンパ節　lateral cervical nodes
+　浅頸リンパ節　superficial cervical nodes
+　深頸リンパ節　lateral deep cervical nodes
+　副神経リンパ節　spinal accessory nodes
+　鎖骨上リンパ節　supraclavicular nodes
+　内深頸リンパ節　internal jugular chain
+　　上内深頸リンパ節　superior internal jugular nodes
+　　中内深頸リンパ節　mid internal jugular nodes
+　　下内深頸リンパ節　inferior internal jugular nodes
+
+その他のリンパ節：以下は領域リンパ節ではない！
+② 耳下腺リンパ節　parotid nodes
+　耳介前リンパ節　preauricular parotid nodes
+　耳介下リンパ節　infra-auricular parotid nodes
+　耳下腺内リンパ節　intraglandular parotid nodes</div>
+    </div>
+  </section>
+
+  <section class="panel" id="notes">
+    <div class="head"><span>リンパ節判定基準</span></div>
+    <div class="body">
+      <div class="info-text">pNX　評価不能
+pN0　転移無し
+pN1　一側の単発性リンパ節転移で最大径が3cm以下かつ節外浸潤なし
+pN2a　一側単発性リンパ節転移で最大径が3cmを越え6cm以下かつ節外浸潤あり
+pN2b　一側の多発性リンパ節転移で最大径が6cm以下かつ節外浸潤なし
+pN2c　両側または対側のリンパ節転移で最大径が6cm以下かつ節外浸潤なし
+pN3a　最大径が6cmを越えるリンパ節転移
+pN3b　最大径が3cmを越えるリンパ節転移で節外浸潤あり</div>
+    </div>
+  </section>
+
+</section>
+
+<aside class="report">
+  <section class="report-panel">
+    <div class="report-head"><span>Report</span><span class="small">Reflect your selections and inputs.</span></div>
+    <div class="report-box" id="report">No selection</div>
+    <div class="copybar"><button class="copybtn" onclick="copyReport()">Copy of the report</button></div>
+  </section>
+
+  <section class="finding">
+    <div class="report-head"><span>Finding</span><span class="small">Enter the search text here.</span></div>
+    <textarea id="finding" placeholder="Enter your findings here..."></textarea>
+    <div class="copybar"><button class="copybtn" onclick="copyFinding()">Copy of reflect</button></div>
+  </section>
+</aside>
+
+</div>
+
+<script>
+const nodeData = [
+["cervical","頸部"],["submental","オトガイ下"],["submandibular","顎下"],
+["preglandular","腺前"],["prevascular","血管前"],["retrovascular","血管後"],
+["retroglandular","腺後"],["anterior","前頸部"],["anterior superficial cervical","前頸静脈"],
+["prelaryngeal","喉頭前"],["prethyroid","甲状腺前"],["pretracheal","気管前"],
+["paratracheal","気管傍"],["para-and retropharyngeal","咽頭周囲"],["lateral cervical","側頸"],
+["superficial cervical","浅頸"],["lateral deep cervical","深頸"],["spinal accessory","副神経"],
+["supraclavicular","鎖骨上窩"],["internal jugular chain","内深頸"],
+["superior internal jugular","上内深頸"],["mid internal jugular","中内深頸"],
+["inferior internal jugular","下内深頸"],["parotid nodes","耳下腺"],
+["preauricular parotid","耳介前"],["infra-auricular parotid","耳介下"],
+["intraglandular parotid","耳下腺内"],["Other","pM1(LYM)"]
+];
+
+const tbody=document.getElementById("nodeRows");
+nodeData.forEach((n,i)=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td>${n[0]}</td>
+  <td><input class="node-met" data-node="${n[0]}" type="number" min="0"></td>
+  <td><input class="node-dis" data-node="${n[0]}" type="number" min="0"></td>
+  <td>${n[1]}</td>`;
+  tbody.appendChild(tr);
+});
+
+function go(id){document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"})}
+
+function selectedRadio(name){
+  const el=document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : "";
+}
+
+function buildReport(){
+  const invasion=selectedRadio("invasion");
+  const side=selectedRadio("side");
+  const diameter=document.getElementById("diameter").value;
+  const total=document.getElementById("totalMet").value;
+  const pnx=document.getElementById("pnx").value;
+  const pmx=document.getElementById("pmx").value;
+  const findings=document.getElementById("finding").value;
+
+  let lines=[];
+  if(invasion) lines.push(`浸潤: ${invasion}`);
+  if(side) lines.push(`分布: ${side}`);
+  if(diameter) lines.push(`最大径: ${diameter} cm`);
+
+  const nodes=[];
+  document.querySelectorAll(".node-met").forEach(x=>{
+    if(x.value!=="") nodes.push(`${x.dataset.node}: 転移数 ${x.value}`);
+  });
+  document.querySelectorAll(".node-dis").forEach(x=>{
+    if(x.value!=="") nodes.push(`${x.dataset.node}: 郭清数 ${x.value}`);
+  });
+  if(nodes.length) lines.push(`リンパ節:\n${nodes.join("\n")}`);
+
+  if(total || pnx || pmx){
+    lines.push(`total: ${total || 0}`);
+    lines.push(`pNX: ${pnx || 0}`);
+    lines.push(`pMX(LYM): ${pmx || 0}`);
+  }
+  if(findings) lines.push(`Finding:\n${findings}`);
+
+  document.getElementById("report").textContent=lines.length ? lines.join("\n\n") : "No selection";
+  updateFormula();
+}
+
+function updateFormula(){
+  const total=document.getElementById("totalMet").value || 0;
+  const pnx=document.getElementById("pnx").value || 0;
+  const pmx=document.getElementById("pmx").value || 0;
+  let stage="pN0";
+  if(Number(pnx)>0) stage="pNX";
+  else if(Number(total)>0) stage="pN1";
+  document.getElementById("formula").textContent=`${stage} [total(${total}/0): (${pnx}/${pmx})]`;
+}
+
+document.addEventListener("change",buildReport);
+document.addEventListener("input",buildReport);
+
+document.querySelectorAll('input[type="radio"]').forEach(r=>{
+  r.addEventListener("click",function(){
+    if(this.dataset.wasChecked==="true"){
+      this.checked=false;
+      this.dataset.wasChecked="false";
+      buildReport();
+    }else{
+      document.querySelectorAll(`input[name="${this.name}"]`).forEach(x=>x.dataset.wasChecked="false");
+      this.dataset.wasChecked="true";
+    }
+  });
+});
+
+function clearInputs(){
+  document.querySelectorAll("input").forEach(x=>{
+    if(x.type==="radio"||x.type==="checkbox") x.checked=false;
+    else x.value="";
+    x.dataset.wasChecked="false";
+  });
+  document.getElementById("finding").value="";
+  buildReport();
+}
+
+function copyReport(){
+  navigator.clipboard.writeText(document.getElementById("report").textContent);
+}
+function copyFinding(){
+  navigator.clipboard.writeText(document.getElementById("finding").value);
+}
+function copyPN(){
+  navigator.clipboard.writeText(document.getElementById("formula").textContent);
+}
+buildReport();
+</script>
+</body>
+</html>

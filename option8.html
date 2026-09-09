@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Option 8 - Cervical Lymph Nodes</title>
+<style>
+:root{
+  --blue:#5f8fa8; --blue2:#78a9bf; --light:#e7f2f6; --row:#d7e8ee;
+  --border:#a7c2cf; --dark:#4e4e4e; --text:#17313d; --green:#5fcdb1;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Arial,"Yu Gothic",Meiryo,sans-serif;color:var(--text);font-size:13px}
+body{overflow:hidden;background:#fff}
+button,input,textarea{font:inherit}
+.app{height:100vh;display:flex;overflow:hidden}
+.nav{
+  width:150px;flex:0 0 150px;background:#486f82;color:#fff;padding:8px;
+  display:flex;flex-direction:column;gap:6px
+}
+.nav h2{font-size:15px;margin:0 0 4px}
+.nav button{
+  border:1px solid #9bb8c5;background:#5f8fa8;color:#fff;
+  padding:8px 6px;text-align:left;cursor:pointer
+}
+.nav button.active,.nav button:hover{background:#86afc0}
+.main{flex:1;min-width:0;display:flex;overflow:hidden}
+.work{flex:0 0 50%;min-width:0;overflow-y:auto;overflow-x:hidden;padding:8px}
+.paired-sections{width:100%}
+.paired-row{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:8px;width:100%;margin-bottom:8px;align-items:start
+}
+.paired-cell{min-width:0}
+.panel{border:1px solid var(--border);background:var(--light);margin-bottom:8px}
+.hd{
+  min-height:25px;background:var(--blue);color:#fff;font-weight:bold;
+  display:flex;align-items:center;padding:5px 8px
+}
+.hd .sub{margin-left:auto;font-size:11px;font-weight:normal}
+.body{padding:6px 8px}
+.stage{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px
+}
+.stage-card{border:1px solid var(--border);background:var(--light)}
+.stage-head{
+  background:var(--green);color:#fff;font-weight:bold;
+  padding:5px;text-align:center;min-height:25px
+}
+.stage-input-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:#dff3ef;
+}
+.stage-input-row.single{grid-template-columns:1fr}
+.stage-input-row label{display:flex;align-items:center;justify-content:center;gap:8px;padding:5px 6px;border-right:1px solid #c7ddd8;font-weight:600}
+.stage-input-row input{width:70px;height:22px;border:1px solid #9db7c3;background:#fff;padding:2px 5px;font-weight:normal}
+.stage-input-row.single label{justify-content:center}
+.section-title{
+  background:#707070;color:#fff;padding:5px 7px;font-weight:bold
+}
+.table-head{
+  display:grid;grid-template-columns:1.25fr .8fr 1.55fr;
+  background:#aaa;color:#fff;font-weight:bold
+}
+.table-head span,.data-row span{padding:4px 6px}
+.data-row{
+  display:grid;grid-template-columns:1.25fr .8fr 1.55fr;
+  min-height:27px
+}
+.data-row:nth-child(even){background:#d0d0d0}
+.data-row:nth-child(odd){background:#ededed}
+.data-row input{
+  width:100%;height:23px;border:1px solid #8ea9b5;background:#fff
+}
+.option{
+  display:flex;align-items:center;gap:5px;padding:4px 2px;
+  background:#e7f2f6
+}
+.option:nth-child(even){background:#d7e8ee}
+.option input{margin:0}
+.invasion-row{flex-wrap:wrap;gap:7px 12px}
+.radio-choice{display:inline-flex;align-items:center;gap:3px;cursor:pointer}
+.radio-choice input{margin:0}
+.free-input{width:100%;min-height:58px;border:1px solid var(--border);background:#fff;padding:7px;resize:vertical;outline:none}
+.input-label{display:block;font-weight:bold;margin-bottom:5px}
+.info-text{line-height:1.5;padding:6px 8px;background:#eee}
+.info-table{width:100%;border-collapse:collapse}
+.info-table th{background:#aaa;color:#fff;text-align:left;padding:5px}
+.info-table td{padding:5px;border-bottom:1px solid #c1d2d9;vertical-align:top}
+.info-table tr:nth-child(even) td{background:#dceaf0}
+.info-table tr:nth-child(odd) td{background:#edf4f7}
+.note-head{background:#aaa;padding:5px;font-weight:bold}
+.right{
+  flex:1 1 50%;min-width:0;padding:8px 8px 8px 0;
+  display:flex;flex-direction:column;gap:8px;overflow:hidden
+}
+.report-wrap,.finding-wrap{
+  flex:1 1 0;min-height:0;margin:0;display:flex;flex-direction:column
+}
+.report-box{
+  flex:1;min-height:0;background:#fff;border:1px solid var(--border);
+  padding:10px;white-space:pre-wrap;overflow:hidden
+}
+.finding-box{
+  flex:1;min-height:0;width:100%;resize:none;border:1px solid var(--border);
+  background:#fff;padding:10px;outline:none
+}
+.action-row{
+  height:35px;background:#e7f2f6;display:flex;justify-content:flex-end;align-items:center
+}
+.copy-small{
+  height:32px;border:0;background:#5f8fa8;color:#fff;padding:0 14px;cursor:pointer
+}
+.copy-small:hover{background:#486f82}
+.clear-btn{background:#777}
+@media(max-width:900px){
+  body{overflow:auto}.app{height:auto;min-height:100vh;display:block}
+  .nav{width:100%;flex-direction:row;overflow-x:auto}.nav h2{display:none}
+  .main{display:block}.work,.right{width:100%;max-width:none}
+  .work{overflow:visible}.right{height:70vh;padding:8px}
+}
+</style>
+
+<style id="option8-final-30-30-40">
+/* =========================================================
+   OPTION 8 — EXACT 30 / 30 / 40 OF THE FULL SCREEN
+   Text/Input  = 30%
+   Information = 30%
+   Report      = 40%
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing:border-box !important;
+}
+
+html, body {
+  width:100vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+.app {
+  width:100vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:block !important;
+  overflow:hidden !important;
+}
+
+.main {
+  width:100vw !important;
+  height:100vh !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  gap:0 !important;
+  overflow:hidden !important;
+}
+
+/* LEFT 60% = Text/Input 30% + Information 30% */
+.main > .work {
+  flex:0 0 60vw !important;
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+}
+
+/* Every paired row uses exactly 30vw + 30vw.
+   No artificial space between the two columns. */
+.main > .work .paired-row {
+  width:60vw !important;
+  display:grid !important;
+  grid-template-columns:30vw 30vw !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.main > .work .paired-cell {
+  width:30vw !important;
+  min-width:30vw !important;
+  max-width:30vw !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* Top stage is also exactly 30% + 30%. */
+.main > .work > .stage {
+  width:60vw !important;
+  display:grid !important;
+  grid-template-columns:30vw 30vw !important;
+  gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* RIGHT 40% = Report + Finding */
+.main > .right {
+  position:relative !important;
+  flex:0 0 40vw !important;
+  width:40vw !important;
+  min-width:40vw !important;
+  max-width:40vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:0 !important;
+  overflow:hidden !important;
+  background:#fff !important;
+}
+
+/* Report and Finding fill the complete 40%. */
+.main > .right > .panel {
+  width:40vw !important;
+  min-width:40vw !important;
+  max-width:40vw !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+
+.main > .right > .panel + .panel {
+  margin-top:0 !important;
+}
+
+/* Remove outer spacing only; keep internal control/text spacing. */
+.main > .right .report-wrap,
+.main > .right .finding-wrap {
+  width:40vw !important;
+  max-width:40vw !important;
+  margin:0 !important;
+}
+
+/* Keep Report and Finding visible in the fixed 40% area. */
+.main > .right .report-box,
+.main > .right .finding-box {
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+
+@media(max-width:700px) {
+  html, body {
+    overflow:auto !important;
+  }
+
+  .app,
+  .main {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:auto !important;
+    overflow:visible !important;
+  }
+
+  .main {
+    display:block !important;
+  }
+
+  .main > .work {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:auto !important;
+    overflow:visible !important;
+  }
+
+  .main > .work .paired-row,
+  .main > .work > .stage {
+    width:100% !important;
+    grid-template-columns:1fr !important;
+  }
+
+  .main > .work .paired-cell {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+  }
+
+  .main > .right {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:auto !important;
+  }
+
+  .main > .right > .panel {
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+  }
+}
+</style>
+
+</head>
+<body>
+<div class="app">
+<main class="main">
+    <section class="work" id="inputArea">
+      <div id="top"></div>
+
+      <div class="stage">
+        <section class="stage-card">
+          <div class="stage-head">頭頸部癌取扱い規約　2018　第6版</div>
+          <div class="stage-input-row">
+            <label>T <input id="uiccT" type="text" autocomplete="off"></label>
+            <label>N <input id="uiccN" type="text" autocomplete="off"></label>
+            <label>M <input id="uiccM" type="text" autocomplete="off"></label>
+          </div>
+          <div class="stage-input-row single">
+            <label>Stage <input id="uiccStage" type="text" autocomplete="off"></label>
+          </div>
+        </section>
+        <section class="stage-card">
+          <div class="stage-head">鼻腔＋副鼻腔　中咽頭p16陽性or不明　下咽頭　喉頭　大唾液腺</div>
+          <div class="stage-input-row">
+            <label>T <input id="guideT" type="text" autocomplete="off"></label>
+            <label>N <input id="guideN" type="text" autocomplete="off"></label>
+            <label>M <input id="guideM" type="text" autocomplete="off"></label>
+          </div>
+          <div class="stage-input-row single">
+            <label>Stage <input id="guideStage" type="text" autocomplete="off"></label>
+          </div>
+        </section>
+      </div>
+
+      <div class="paired-sections">
+
+        <div class="paired-row" id="nodes">
+          <div class="paired-cell">
+            <section class="panel">
+              <div class="hd">頸部リンパ節</div>
+              <div class="section-title">浸潤</div>
+              <div class="body">
+                <div class="option invasion-row">
+                  <input type="checkbox" id="extra"><label for="extra">節外浸潤あり</label>
+                  <label class="radio-choice"><input type="radio" name="extraSide" value="同側">同側</label>
+                  <label class="radio-choice"><input type="radio" name="extraSide" value="両側あるいは対側">両側あるいは対側</label>
+                </div>
+                <div class="option invasion-row">
+                  <input type="checkbox" id="adjacent"><label for="adjacent">隣接血管浸潤あり</label>
+                  <label class="radio-choice"><input type="radio" name="adjacentSide" value="同側">同側</label>
+                  <label class="radio-choice"><input type="radio" name="adjacentSide" value="両側あるいは対側">両側あるいは対側</label>
+                </div>
+                <div style="padding:5px 2px">↑ 血管浸潤は所見入力時に反映されます（未実装）</div>
+              </div>
+
+              <div class="table-head">
+                <span>番号</span><span>転移数　郭清数</span><span>名称</span>
+              </div>
+
+              <div class="section-title">頸部リンパ節</div>
+              <div class="data-row"><span>cervical</span><span><input id="cervical"></span><span>頸部</span></div>
+              <div class="data-row"><span>submental</span><span><input id="submental"></span><span>オトガイ下</span></div>
+              <div class="data-row"><span>submandibular</span><span><input id="submandibular"></span><span>顎下</span></div>
+              <div class="data-row"><span>preglandular</span><span><input id="preglandular"></span><span>腺前</span></div>
+              <div class="data-row"><span>prevascular</span><span><input id="prevascular"></span><span>血管前</span></div>
+              <div class="data-row"><span>retrovascular</span><span><input id="retrovascular"></span><span>血管後</span></div>
+              <div class="data-row"><span>retroglandular</span><span><input id="retroglandular"></span><span>腺後</span></div>
+              <div class="data-row"><span>anterior</span><span><input id="anterior"></span><span>前頸部</span></div>
+              <div class="data-row"><span>anterior superficial cervical</span><span><input id="asc"></span><span>前頸部浅</span></div>
+              <div class="data-row"><span>prelaryngeal</span><span><input id="prelaryngeal"></span><span>喉頭前</span></div>
+              <div class="data-row"><span>prethyroid</span><span><input id="prethyroid"></span><span>甲状腺前</span></div>
+              <div class="data-row"><span>pretracheal</span><span><input id="pretracheal"></span><span>気管前</span></div>
+              <div class="data-row"><span>paratracheal</span><span><input id="paratracheal"></span><span>気管傍</span></div>
+              <div class="data-row"><span>para-and retropharyngeal</span><span><input id="pararetro"></span><span>咽頭周囲</span></div>
+              <div class="data-row"><span>lateral cervical</span><span><input id="lateral"></span><span>側頸</span></div>
+              <div class="data-row"><span>superficial cervical</span><span><input id="superficial"></span><span>浅頸</span></div>
+              <div class="data-row"><span>lateral deep cervical</span><span><input id="deep"></span><span>深頸</span></div>
+              <div class="data-row"><span>spinal accessory</span><span><input id="spinal"></span><span>副神経</span></div>
+              <div class="data-row"><span>supraclavicular</span><span><input id="supraclavicular"></span><span>鎖骨上窩</span></div>
+              <div class="data-row"><span>internal jugular chain</span><span><input id="ijchain"></span><span>内深頸</span></div>
+              <div class="data-row"><span>superior internal jugular</span><span><input id="superior"></span><span>上内深頸</span></div>
+              <div class="data-row"><span>mid internal jugular</span><span><input id="mid"></span><span>中内深頸</span></div>
+              <div class="data-row"><span>inferior internal jugular</span><span><input id="inferior"></span><span>下内深頸</span></div>
+              <div class="section-title">parotid nodes</div>
+              <div class="data-row"><span>preauricular parotid</span><span><input id="preauricular"></span><span>耳介前</span></div>
+              <div class="data-row"><span>infra-auricular parotid</span><span><input id="infra"></span><span>耳介下</span></div>
+              <div class="data-row"><span>intraglandular parotid</span><span><input id="intraglandular"></span><span>耳下腺内</span></div>
+              <div class="data-row"><span>Other</span><span><input id="other"></span><span>pM1(LYM)</span></div>
+            </section>
+          </div>
+
+          <div class="paired-cell">
+            <section class="panel">
+              <div class="hd">転移数・郭清数</div>
+              <div class="body">
+                <div style="display:grid;grid-template-columns:80px 1fr;gap:5px;margin-bottom:5px">
+                  <label>total</label><div><input id="total" type="number" min="0" value="0" style="width:70px">　<input id="dissected" type="number" min="0" value="0" style="width:70px"></div>
+                  <label>pNX</label><div><input id="pnx" type="number" min="0" value="0" style="width:70px">　pMX <input id="pmx" type="number" min="0" value="0" style="width:70px"></div>
+                </div>
+                <div style="padding:6px;background:#d7e8ee">完成式　<span id="completion">pN0 [total(0/0): (0)]</span></div>
+                <div style="padding:6px">↑ 下の pNXコピー ボタンを押して任意の場所に貼り付けてください</div>
+                <button class="copy-small" id="copyPnx">pNX[(/)]をコピー</button>
+                <button class="copy-small clear-btn" id="clearInputs" style="float:right">入力したデータを消す</button>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="hd">リンパ節　所属リンパ節転移あり</div>
+              <table class="info-table">
+                <tr><td>pNX</td><td>評価不能</td></tr>
+                <tr><td>pN0</td><td>転移無し</td></tr>
+                <tr><td>pN1</td><td>同側の単発性リンパ節転移で最大径が3cm以下かつ節外浸潤なし</td></tr>
+                <tr><td>pN2a</td><td>同側の単発性リンパ節転移で最大径が3cm以下で節外浸潤あり、または3cmを超える6cm以下で節外浸潤なし</td></tr>
+                <tr><td>pN2b</td><td>同側の多発性リンパ節転移で最大径が6cm以下かつ節外浸潤なし</td></tr>
+                <tr><td>pN2c</td><td>両側あるいは対側のリンパ節転移で最大径が6cm以下かつ節外浸潤なし</td></tr>
+                <tr><td>pN3a</td><td>最大径が6cmを超えるリンパ節転移で節外浸潤なし</td></tr>
+                <tr><td>pN3b</td><td>最大径が3cmを超えるリンパ節転移で節外浸潤あり／同側の多発性リンパ節転移で節外浸潤あり／対側もしくは両側のリンパ節転移で節外浸潤あり</td></tr>
+              </table>
+            </section>
+
+            <section class="panel" id="notes">
+              <div class="note-head">特記事項</div>
+              <div class="info-text">被膜外浸潤の有無<br><br>隣接血管浸潤の有無</div>
+              <div class="note-head">補足</div>
+              <div class="info-text">
+                正中のリンパ節は同側に含む<br><br>
+                原発の直接浸潤は転移に分類する<br><br>
+                3mm以上の腫瘍巣はリンパ節組織を含むものと転移として分類する<br><br>
+                大きさとはリンパ節全体では無く、転移巣の大きさである
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="hd">頭頸部頸部リンパ節</div>
+              <div class="info-text">
+                ◇ 所属リンパ節（頸部リンパ節）日本癌治療学会リンパ節規約準拠（頭頸部癌取扱い規約第5版）<br>
+                !　用語の不統一により領域リンパ節とされている。<br>
+                !　正中のリンパ節は同側に含める。<br><br>
+                ① 頸部リンパ節　cervical nodes<br>
+                オトガイ下リンパ節　submental nodes<br>
+                顎下リンパ節　submandibular nodes<br>
+                腺前リンパ節　preglandular nodes<br>
+                血管前リンパ節　prevascular nodes<br>
+                血管後リンパ節　retrovascular nodes<br>
+                腺後リンパ節　retroglandular nodes<br>
+                前頸部リンパ節　anterior nodes<br>
+                前頸部浅リンパ節　anterior superficial cervical nodes<br>
+                喉頭前リンパ節　prelaryngeal nodes<br>
+                甲状腺前リンパ節　prethyroid nodes<br>
+                気管前リンパ節　pretracheal nodes<br>
+                気管傍リンパ節　paratracheal nodes<br>
+                咽頭周囲リンパ節　para-and retropharyngeal nodes<br>
+                側頸リンパ節　lateral cervical nodes<br>
+                浅頸リンパ節　superficial cervical nodes<br>
+                深頸リンパ節　lateral deep cervical nodes<br>
+                副神経リンパ節　spinal accessory nodes<br>
+                鎖骨上窩リンパ節　supraclavicular nodes<br>
+                内深頸リンパ節　internal jugular chain<br>
+                上内深頸リンパ節　superior internal jugular nodes<br>
+                中内深頸リンパ節　mid internal jugular nodes<br>
+                下内深頸リンパ節　inferior internal jugular nodes<br><br>
+                ② 耳下腺リンパ節　parotid nodes<br>
+                耳介前リンパ節　preauricular parotid nodes<br>
+                耳介下リンパ節　infra-auricular parotid nodes<br>
+                耳下腺内リンパ節　intraglandular parotid nodes
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="hd">病期分類　日本規約＋UICC/TNM分類第8版</div>
+              <div class="info-text">
+                !　頭頸部癌取扱い規約および口腔癌取扱い規約とUICC/TNM分類第8版は共通<br>
+                !　上咽頭および上気道消化管の悪性腫瘍以外はすべて同じ病期分類を用いる。<br>
+                !　唾液腺には「分類に当てはめない」の規約もある
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="right">
+      <section class="panel report-wrap">
+        <div class="hd">Report <span class="sub">Reflect your selections and inputs.</span></div>
+        <div id="report" class="report-box"></div>
+        <div class="action-row"><button class="copy-small" id="copyReport">Copy of the report</button></div>
+      </section>
+      <section class="panel finding-wrap">
+        <div class="hd">Finding <span class="sub">Enter the search text here.</span></div>
+        <textarea id="finding" class="finding-box" placeholder="Enter your findings here..."></textarea>
+        <div class="action-row"><button class="copy-small" id="copyFinding">Copy of findings</button></div>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const nodeIds=[
+'cervical','submental','submandibular','preglandular','prevascular','retrovascular',
+'retroglandular','anterior','asc','prelaryngeal','prethyroid','pretracheal',
+'paratracheal','pararetro','lateral','superficial','deep','spinal','supraclavicular',
+'ijchain','superior','mid','inferior','preauricular','infra','intraglandular','other'
+];
+
+function updateCompletion(){
+  const total=Number($('total').value||0);
+  const pnx=Number($('pnx').value||0);
+  const dissected=Number($('dissected').value||0);
+  const p=pnx===0?'pN0':'pNX';
+  $('completion').textContent=`${p} [total(${pnx}/${total}): (${dissected})]`;
+}
+function updateReport(){
+  const lines=[];
+  const total=$('total').value, dissected=$('dissected').value;
+  const pnx=$('pnx').value, pmx=$('pmx').value;
+  const stageFields=[
+    ['UICC/TNM', 'uiccT','uiccN','uiccM','uiccStage'],
+    ['Cancer Treatment Guidelines', 'guideT','guideN','guideM','guideStage']
+  ];
+  stageFields.forEach(([name,t,n,m,stage])=>{
+    const vals=[$(t).value.trim(),$(n).value.trim(),$(m).value.trim(),$(stage).value.trim()];
+    if(vals.some(Boolean)){
+      const parts=[];
+      if(vals[0]) parts.push(`T=${vals[0]}`);
+      if(vals[1]) parts.push(`N=${vals[1]}`);
+      if(vals[2]) parts.push(`M=${vals[2]}`);
+      if(vals[3]) parts.push(`Stage=${vals[3]}`);
+      lines.push(`${name}: ${parts.join(', ')}`);
+    }
+  });
+  if(total!=='' || dissected!=='') lines.push(`リンパ節転移数 / 郭清数: total=${total||0}, 郭清=${dissected||0}`);
+  if(pnx!=='') lines.push(`pNX: ${pnx}`);
+  if(pmx!=='') lines.push(`pMX: ${pmx}`);
+  nodeIds.forEach(id=>{
+    const e=$(id);
+    if(e && e.value!=='') lines.push(`${e.previousElementSibling?.textContent || id}: ${e.value}`);
+  });
+  if($('extra').checked){
+    const side=document.querySelector('input[name=extraSide]:checked');
+    lines.push(`節外浸潤あり${side?'：'+side.value:''}`);
+  }
+  if($('adjacent').checked){
+    const side=document.querySelector('input[name=adjacentSide]:checked');
+    lines.push(`隣接血管浸潤あり${side?'：'+side.value:''}`);
+  }
+  $('report').textContent=lines.length?lines.join('\n'):'（選択・入力されたデータはありません）';
+}
+function updateAll(){updateCompletion();updateReport();}
+document.querySelectorAll('input').forEach(e=>{
+  e.addEventListener('input',updateAll);
+  e.addEventListener('change',updateAll);
+});
+$('clearInputs').onclick=()=>{
+  nodeIds.forEach(id=>{if($(id)) $(id).value=''});
+  ['total','dissected','pnx','pmx'].forEach(id=>$(id).value='0');
+  ['uiccT','uiccN','uiccM','uiccStage','guideT','guideN','guideM','guideStage'].forEach(id=>$(id).value='');
+  $('extra').checked=false;$('adjacent').checked=false;
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+  updateAll();
+};
+$('copyPnx').onclick=()=>navigator.clipboard?.writeText($('completion').textContent);
+$('copyReport').onclick=()=>navigator.clipboard?.writeText($('report').textContent);
+$('copyFinding').onclick=()=>navigator.clipboard?.writeText($('finding').value);
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');$(b.dataset.target).scrollIntoView({behavior:'smooth',block:'start'});
+});
+updateAll();
+</script>
+</body>
+</html>
