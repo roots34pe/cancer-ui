@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Options 1–13</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  width:100%;
+  min-height:100%;
+  font-family:Arial,"Yu Gothic",Meiryo,sans-serif;
+  background:#fff;
+  overflow:hidden;
+}
+
+.app{
+  width:100vw;
+  height:100vh;
+  display:grid;
+  grid-template-columns:180px minmax(0,1fr);
+  overflow:hidden;
+}
+
+/* LEFTMOST NAVIGATION — same role/position as Option 7 */
+.nav{
+  height:100vh;
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:#5f8fa5;
+  border-right:3px solid #d5e2e8;
+  padding:5px;
+}
+
+.nav-title{
+  height:34px;
+  display:flex;
+  align-items:center;
+  padding:0 8px;
+  background:#476f82;
+  color:#fff;
+  font-weight:bold;
+  font-size:14px;
+}
+
+.nav button{
+  display:block;
+  width:100%;
+  min-height:34px;
+  margin:3px 0;
+  padding:7px 8px;
+  border:1px solid #d4e2e8;
+  background:#78a7bb;
+  color:#fff;
+  text-align:left;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.nav button:hover{
+  background:#6799ae;
+}
+
+.nav button.active{
+  background:#416f84;
+  border-left:5px solid #fff;
+  padding-left:4px;
+  font-weight:bold;
+}
+
+.nav .folder{
+  margin-top:10px;
+  background:#496f81;
+  border-color:#36596a;
+  font-size:12px;
+}
+
+#folderInput{display:none}
+
+/* ONLY the selected option page is displayed here.
+   No master Report/Finding column. */
+.center{
+  min-width:0;
+  width:100%;
+  height:100vh;
+  overflow:hidden;
+  background:#fff;
+}
+
+#frame{
+  display:block;
+  width:100%;
+  height:100%;
+  border:0;
+  background:#fff;
+}
+
+.notice{
+  position:fixed;
+  left:190px;
+  top:6px;
+  z-index:1000;
+  display:none;
+  padding:6px 10px;
+  background:#fff3cd;
+  border:1px solid #d6b95e;
+  color:#333;
+  font-size:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.15);
+}
+
+@media(max-width:800px){
+  .app{
+    grid-template-columns:145px minmax(0,1fr);
+  }
+  .nav button{
+    font-size:11px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- LEFTMOST OPTIONS NAVIGATION -->
+  <aside class="nav" aria-label="Options navigation">
+    <div class="nav-title">Options</div>
+
+    <button class="active" data-n="1">肺癌規約</button>
+    <button data-n="2">頭頸部リンパ節</button>
+    <button data-n="3">良性疾患</button>
+    <button data-n="4">口腔癌規約</button>
+    <button data-n="5">口腔癌</button>
+    <button data-n="6">口腔黒色腫</button>
+    <button data-n="7">頭頸部規約</button>
+    <button data-n="8">鼻腔下副鼻腔</button>
+    <button data-n="9">p16陽性</button>
+    <button data-n="10">上咽頭</button>
+    <button data-n="11">EBVp16陰性</button>
+    <button data-n="12">上気道悪性黒色腫</button>
+    <button data-n="13">甲状腺規約</button>
+
+    <button class="folder" id="chooseFolder">Load Option HTML files</button>
+    <input id="folderInput" type="file" webkitdirectory directory multiple>
+  </aside>
+
+  <!-- SELECTED OPTION CONTENT ONLY -->
+  <main class="center">
+    <iframe id="frame" title="Selected option"></iframe>
+  </main>
+</div>
+
+<div id="notice" class="notice"></div>
+
+<script>
+(() => {
+  const frame = document.getElementById("frame");
+  const notice = document.getElementById("notice");
+  const navButtons = [...document.querySelectorAll(".nav button[data-n]")];
+
+  let selectedOption = 1;
+  let suppliedFiles = new Map();
+
+  const names = {
+    1:["option1.html"],
+    2:["option2.html"],
+    3:["option3.html"],
+    4:["option4.html"],
+    5:["option5.html"],
+    6:["option6.html"],
+    7:["option7.html"],
+    8:["option8.html"],
+    9:["option9.html"],
+    10:["option10.html","option_10.html","option_10_with_navigation.html"],
+    11:["option11.html"],
+    12:["option12.html"],
+    13:["option13.html"]
+  };
+
+  function showNotice(message){
+    notice.textContent = message;
+    notice.style.display = "block";
+    clearTimeout(showNotice.timer);
+    showNotice.timer = setTimeout(() => {
+      notice.style.display = "none";
+    }, 4500);
+  }
+
+  function setActive(n){
+    navButtons.forEach(button => {
+      button.classList.toggle("active", Number(button.dataset.n) === Number(n));
+    });
+  }
+
+  async function readSupplied(n){
+    for(const name of (names[n] || [])){
+      const file = suppliedFiles.get(name.toLowerCase());
+      if(file) return await file.text();
+    }
+    return null;
+  }
+
+  async function loadRelative(n){
+    for(const name of (names[n] || [])){
+      try{
+        const response = await fetch(name, {cache:"no-store"});
+        if(response.ok) return await response.text();
+      }catch(e){}
+    }
+    return null;
+  }
+
+  /*
+    The individual option HTML files already contain their own clinical
+    Input / Information / Report / Finding structure.
+
+    In this master page:
+      - the LEFT master navigation remains visible;
+      - the selected option's Input + Information content remains visible;
+      - the option's own duplicate navigation is hidden;
+      - the option's own Report/Finding area is hidden;
+      - NO right-hand master Report/Finding area exists.
+  */
+  function prepareDocument(doc){
+    if(!doc || !doc.head) return;
+
+    const style = doc.createElement("style");
+    style.id = "master-remove-duplicate-shell";
+
+    style.textContent = `
+      html,body{
+        width:100%!important;
+        max-width:none!important;
+        min-width:0!important;
+        overflow:auto!important;
+      }
+
+      /*
+        Hide only navigation shells belonging to the individual option.
+        Do not hide clinical content merely because it is inside an aside.
+      */
+      nav.nav,
+      aside.nav,
+      .option-nav,
+      .navbar,
+      .navigation,
+      .sidebar{
+        display:none!important;
+      }
+
+      /*
+        Remove Report/Finding from the selected option page because the
+        master page no longer provides a right-hand Report/Finding column.
+      */
+      .report-column,
+      .report-pane,
+      .report-finding,
+      .report-area,
+      .finding-area,
+      .report-panel,
+      .finding-panel,
+      .report-section,
+      .findings-section,
+      .report-wrap,
+      .finding-wrap,
+      .report-box,
+      .finding-box,
+      aside.right,
+      .right-column,
+      .right{
+        display:none!important;
+      }
+
+      /*
+        Remove layouts that reserved a third/right Report column.
+        Input + Information remain the clinical page content.
+      */
+      .workspace{
+        grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+      }
+
+      input,textarea,select,button{
+        pointer-events:auto!important;
+      }
+    `;
+
+    doc.head.appendChild(style);
+
+    /*
+      Some option pages use a generic nav/aside. Hide it only when it
+      clearly looks like navigation, never blindly hide every aside.
+    */
+    doc.querySelectorAll("nav,aside").forEach(el => {
+      const text = (el.innerText || "").trim();
+      const looksLikeNavigation =
+        /Option\\s*\\d+/i.test(text) ||
+        /Navigation/i.test(text) ||
+        /Home/i.test(text) && /Option/i.test(text);
+
+      if(looksLikeNavigation &&
+         !el.querySelector("input,textarea,select,table")){
+        el.style.display = "none";
+      }
+    });
+  }
+
+  async function displayOption(n){
+    selectedOption = Number(n);
+    setActive(selectedOption);
+
+    let source = await readSupplied(selectedOption);
+
+    if(!source){
+      source = await loadRelative(selectedOption);
+    }
+
+    if(!source){
+      frame.removeAttribute("srcdoc");
+      frame.src = (names[selectedOption] || [])[0] || "";
+      showNotice(
+        "Option files were not found. Keep option1.html–option13.html in the same folder, or click “Load Option HTML files”."
+      );
+      return;
+    }
+
+    frame.srcdoc = source;
+  }
+
+  frame.addEventListener("load", () => {
+    try{
+      prepareDocument(frame.contentDocument);
+    }catch(e){}
+  });
+
+  navButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      displayOption(button.dataset.n);
+    });
+  });
+
+  document.getElementById("chooseFolder").addEventListener("click", () => {
+    document.getElementById("folderInput").click();
+  });
+
+  document.getElementById("folderInput").addEventListener("change", async event => {
+    suppliedFiles.clear();
+
+    [...event.target.files].forEach(file => {
+      suppliedFiles.set(file.name.toLowerCase(), file);
+    });
+
+    const missing = [];
+    for(let n=1; n<=13; n++){
+      if(!(await readSupplied(n))) missing.push(n);
+    }
+
+    if(missing.length){
+      showNotice(
+        "Missing Option files: " + missing.join(", ") +
+        ". Select the folder containing all Option HTML files."
+      );
+      return;
+    }
+
+    showNotice("Option 1–13 files loaded.");
+    displayOption(selectedOption);
+  });
+
+  displayOption(1);
+})();
+</script>
+</body>
+</html>

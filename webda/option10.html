@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option 10 - 上咽頭 / 原発不明頸部リンパ節EBV陽性</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
+body{
+  font-family:Arial,"Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+  background:#fff;color:#111;font-size:13px;
+}
+button,input,textarea{font:inherit}
+
+.app{
+  width:100vw;height:100vh;display:flex;overflow:hidden;background:#fff;
+}
+
+/* ===== Option 7-style left navigation ===== */
+.nav{
+  width:78px;flex:0 0 78px;height:100vh;
+  background:#486f82;color:#fff;padding:6px 4px;
+  display:flex;flex-direction:column;gap:3px;
+  overflow-y:auto;overflow-x:hidden;
+}
+.nav h2{
+  font-size:10px;margin:0 0 3px;line-height:1.15;
+  padding:4px 2px;text-align:center;
+}
+.nav button{
+  width:100%;border:1px solid #9bb8c5;background:#5f8fa8;
+  color:#fff;padding:6px 3px;text-align:left;cursor:pointer;
+  border-radius:2px;font-size:9px;line-height:1.2;
+}
+.nav button:hover,.nav button.active{background:#86afc0}
+
+/* ===== Main: clinical workspace on left, report/finding on right ===== */
+.main{
+  flex:1;min-width:0;height:100vh;display:grid;
+  grid-template-columns:minmax(0,48%) minmax(0,52%);
+  overflow:hidden;
+}
+.work{
+  min-width:0;height:100vh;overflow:hidden;
+  display:flex;flex-direction:column;padding:6px 0;
+}
+.shared-scroll{
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  scrollbar-gutter:stable;
+}
+.page{width:100%;padding:0 6px 8px 0}
+.workspace{
+  width:100%;display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:0;align-items:start;
+}
+.input-area,.info-area{min-width:0;margin:0;padding:0}
+.input-area{padding-right:3px}
+.info-area{padding-left:3px}
+
+/* ===== Common section ===== */
+.section{
+  margin:0 0 8px;border:1px solid #c7d8df;
+  background:#fff;scroll-margin-top:6px;
+}
+.section-title{
+  min-height:28px;display:flex;align-items:center;
+  justify-content:space-between;gap:8px;padding:4px 8px;
+  background:#5d8da5;color:#fff;font-weight:700;
+}
+.section-title .rule{font-weight:400;font-size:11px;opacity:.95}
+.sub-title{
+  min-height:25px;padding:5px 8px;background:#a7a7a7;
+  color:#fff;font-weight:700;
+}
+.body{background:#e7f1f5}
+
+/* ===== Infiltration ===== */
+.infiltration-grid{
+  display:grid;grid-template-columns:minmax(0,1fr) 145px 145px;
+  background:#ededed;
+}
+.infiltration-head{
+  background:#a7a7a7;color:#fff;padding:5px 8px;font-weight:700;
+}
+.infiltration-option{
+  min-height:29px;padding:5px 8px;background:#eee;
+  border-bottom:1px solid #ddd;display:block;
+}
+.distribution{
+  min-height:29px;padding:4px 8px;background:#eee;
+  border-bottom:1px solid #ddd;white-space:nowrap;
+}
+.maxsize{
+  min-height:29px;padding:3px 6px;background:#eee;
+  border-bottom:1px solid #ddd;
+}
+.maxsize input{
+  width:90px;height:23px;border:1px solid #b9cbd2;
+  background:#fff;padding:2px 5px;
+}
+label{cursor:pointer}
+input[type=radio],input[type=checkbox]{
+  accent-color:#4f7185;margin:0 5px 0 0;vertical-align:middle;
+}
+
+/* ===== Cervical lymph-node table ===== */
+.node-table{
+  width:100%;border-collapse:collapse;table-layout:fixed;
+}
+.node-table th{
+  background:#a7a7a7;color:#fff;font-weight:700;
+  text-align:left;padding:5px 6px;
+}
+.node-table th:nth-child(1){width:40%}
+.node-table th:nth-child(2){width:18%}
+.node-table th:nth-child(3){width:18%}
+.node-table th:nth-child(4){width:24%}
+.node-table td{
+  padding:3px 6px;height:25px;border-bottom:1px solid #e2e2e2;
+}
+.node-table tbody tr:nth-child(odd) td{background:#c8c8c8}
+.node-table tbody tr:nth-child(even) td{background:#e6e6e6}
+.node-table .group td{
+  background:#737373!important;color:#fff;font-weight:700;
+}
+.node-input{
+  width:70px;height:22px;border:1px solid #b9cbd2;
+  background:#fff;text-align:center;
+}
+
+/* ===== pN / pMX ===== */
+.pn-box{background:#ededed}
+.pn-top{display:grid;grid-template-columns:64px 1fr}
+.pn-label{
+  background:#aaa;color:#fff;padding:9px 7px;
+  min-height:42px;font-weight:700;
+}
+.pn-content{min-width:0}
+.count-row{
+  display:grid;grid-template-columns:1fr 1fr;max-width:250px;
+}
+.count-cell{text-align:center}
+.count-cell .head{
+  background:#aaa;color:#fff;padding:5px 2px;
+}
+.count-cell input{
+  width:100%;height:26px;border:0;background:#ddd;text-align:center;
+}
+.pn-row{
+  display:flex;align-items:center;gap:10px;min-height:42px;
+  padding:5px 8px;background:#ededed;
+}
+.pn-row input{
+  width:70px;height:24px;border:1px solid #b9cbd2;background:#fff;
+}
+.pmx-label{
+  display:inline-block;padding:4px 8px;background:#aaa;color:#fff;
+}
+.formula{min-height:27px;padding:6px 8px;background:#ddd}
+.instruction{padding:7px 18px;background:#eee}
+.actions{
+  display:flex;justify-content:space-between;gap:8px;
+  padding:10px 0 2px;background:#fff;
+}
+.actions button,.copy-button{
+  border:0;background:#858585;color:#fff;min-height:34px;
+  padding:6px 18px;cursor:pointer;
+}
+.actions button:hover,.copy-button:hover{background:#6f6f6f}
+
+/* ===== Information ===== */
+.info-table{width:100%;border-collapse:collapse}
+.info-table td{
+  padding:7px 8px;border-bottom:1px solid #fff;vertical-align:top;
+}
+.info-table td:first-child{
+  width:65px;background:#c7c7c7;font-weight:700;
+}
+.info-table td:last-child{background:#ededed}
+.note{
+  padding:8px;background:#ededed;line-height:1.6;
+}
+.info-list{
+  margin:0;padding:7px 8px 9px 28px;background:#ededed;
+  line-height:1.55;
+}
+.info-list li{margin:2px 0}
+.table-small{
+  width:calc(100% - 16px);margin:8px;border-collapse:collapse;
+  background:#ededed;
+}
+.table-small th,.table-small td{
+  border:1px solid #8b8b8b;padding:4px 6px;text-align:center;
+}
+.table-small th{background:#737373;color:#fff}
+.table-small td{background:#eee}
+
+/* ===== Right report/finding ===== */
+.report-column{
+  min-width:0;height:100vh;padding:6px 0 6px 6px;
+  display:flex;flex-direction:column;gap:8px;overflow:hidden;
+}
+.report-panel{
+  min-height:0;margin:0;border:1px solid #a9c4d0;
+  background:#fff;display:flex;flex-direction:column;flex:1;
+}
+.report-header,.finding-header{
+  height:31px;flex:0 0 31px;display:flex;
+  justify-content:space-between;align-items:center;padding:0 9px;
+  background:#5d8da5;color:#fff;font-weight:700;
+}
+.report-header span,.finding-header span{
+  font-size:11px;font-weight:400;
+}
+.report-output{
+  flex:1;min-height:0;padding:10px;white-space:pre-wrap;
+  overflow:visible;background:#fff;line-height:1.5;
+}
+.finding-output{
+  width:100%;flex:1;min-height:0;resize:none;border:0;outline:none;
+  padding:10px;font-family:inherit;font-size:13px;background:#fff;
+}
+.panel-footer{
+  display:flex;justify-content:flex-end;padding:5px;background:#e5f0f4;
+  flex:0 0 auto;
+}
+
+/* Keep report and finding visible together on desktop */
+@media (min-width:1101px){
+  .report-column .report-panel{min-height:0}
+}
+
+/* ===== Responsive ===== */
+@media (max-width:1100px){
+  .nav{width:145px;flex-basis:145px}
+  .main{grid-template-columns:1fr;height:auto;overflow:auto}
+  .work{height:auto;overflow:visible}
+  .shared-scroll{overflow:visible}
+  .report-column{height:70vh;padding:8px 0 8px 0}
+}
+@media (max-width:760px){
+  html,body{overflow:auto}
+  .app{display:block;height:auto;overflow:visible}
+  .nav{
+    position:sticky;top:0;z-index:20;width:100%;height:auto;
+    max-height:54px;flex-direction:row;overflow-x:auto;
+    overflow-y:hidden;white-space:nowrap;padding:4px;
+  }
+  .nav h2{display:none}
+  .nav button{width:auto;flex:0 0 auto;padding:7px 10px;font-size:10px}
+  .main{display:block;height:auto;overflow:visible}
+  .work{height:auto;overflow:visible}
+  .shared-scroll{overflow:visible}
+  .workspace{grid-template-columns:1fr}
+  .input-area,.info-area{padding:0}
+  .report-column{height:auto;min-height:700px;position:static}
+  .infiltration-grid{grid-template-columns:1fr}
+}
+</style>
+
+<style id="option10-exact-30-30-40">
+/* =========================================================
+   OPTION 10 — EXACT 30 / 30 / 40 OF THE FULL VIEWPORT
+   Input       = 30%
+   Information = 30%
+   Report      = 40%
+   Total       = 100%
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing:border-box !important;
+}
+
+html, body {
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+}
+
+/* Main three-column container */
+.page {
+  width:100vw !important;
+  min-width:0 !important;
+  min-height:100vh !important;
+  height:auto !important;
+  display:grid !important;
+  grid-template-columns:30vw 30vw 40vw !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+  gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  align-items:start !important;
+}
+
+/* Input = 30% */
+.input-column {
+  grid-column:1 !important;
+  width:30vw !important;
+  min-width:0 !important;
+  max-width:30vw !important;
+  margin:0 !important;
+  padding:0 !important;
+  height:auto !important;
+  overflow:visible !important;
+}
+
+/* Information = 30% */
+.info-column {
+  grid-column:2 !important;
+  width:30vw !important;
+  min-width:0 !important;
+  max-width:30vw !important;
+  margin:0 !important;
+  padding:0 !important;
+  height:auto !important;
+  overflow:visible !important;
+}
+
+/* Input + Information move together with the page scrollbar. */
+.input-column,
+.info-column {
+  overflow-y:visible !important;
+  overflow-x:hidden !important;
+}
+
+/* Report + Finding = 40%, fixed/sticky at right */
+.report-column {
+  grid-column:3 !important;
+  width:40vw !important;
+  min-width:0 !important;
+  max-width:40vw !important;
+  height:100vh !important;
+  min-height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  position:sticky !important;
+  top:0 !important;
+  align-self:start !important;
+  overflow:hidden !important;
+}
+
+/* Full-width report/finding panels */
+.report-column .panel {
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+
+.report-column .panel + .panel {
+  margin-top:0 !important;
+}
+
+/* Do not let inner report elements create an outer horizontal gap. */
+.report-column .report-output,
+.report-column .finding-area,
+.report-column .copy-bar {
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+
+/* Desktop: enforce exact viewport ratio. */
+@media(min-width:1101px) {
+  .page {
+    grid-template-columns:30vw 30vw 40vw !important;
+  }
+  .input-column {
+    width:30vw !important;
+    max-width:30vw !important;
+  }
+  .info-column {
+    width:30vw !important;
+    max-width:30vw !important;
+  }
+  .report-column {
+    width:40vw !important;
+    max-width:40vw !important;
+    height:100vh !important;
+    position:sticky !important;
+    top:0 !important;
+  }
+}
+
+/* Mobile fallback */
+@media(max-width:1100px) {
+  .page {
+    width:100% !important;
+    display:grid !important;
+    grid-template-columns:1fr !important;
+  }
+
+  .input-column,
+  .info-column,
+  .report-column {
+    grid-column:1 !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+  }
+
+  .report-column {
+    position:relative !important;
+    height:auto !important;
+    min-height:0 !important;
+  }
+}
+</style>
+
+
+<style id="option10-viewport-100-30-30-40-final">
+html, body {
+  width:100vw !important;
+  max-width:100vw !important;
+  min-width:100vw !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-x:hidden !important;
+}
+
+.app, .page, main {
+  width:100vw !important;
+  max-width:100vw !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  gap:0 !important;
+  box-sizing:border-box !important;
+}
+
+/* EXACTLY 100% viewport divided into 30/30/40 */
+.page {
+  display:grid !important;
+  grid-template-columns:30% 30% 40% !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+  width:100vw !important;
+  min-height:100vh !important;
+}
+
+/* 30% Input */
+.input-column {
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  grid-column:1 !important;
+  box-sizing:border-box !important;
+}
+
+/* 30% Information */
+.info-column {
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  grid-column:2 !important;
+  box-sizing:border-box !important;
+}
+
+/* 40% Report + Finding */
+.report-column {
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  grid-column:3 !important;
+  position:sticky !important;
+  top:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+
+/* Absolutely no gap between report/finding sections. */
+.report-column,
+.report-column > *,
+.report-column .panel {
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+.report-column .panel + .panel {
+  margin-top:0 !important;
+}
+
+/* Remove only outer column spacing; retain internal form spacing. */
+.input-column,
+.info-column {
+  overflow:visible !important;
+}
+
+@media(max-width:1100px) {
+  .page {
+    width:100% !important;
+    grid-template-columns:1fr !important;
+  }
+
+  .input-column,
+  .info-column,
+  .report-column {
+    grid-column:1 !important;
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+  }
+
+  .report-column {
+    position:relative !important;
+    height:auto !important;
+  }
+}
+</style>
+
+
+<style id="option10-100-percent-30-30-40-hard-fix">
+/* ===== OUTER VIEWPORT = 100% ===== */
+html, body {
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-x:hidden !important;
+}
+
+.page {
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:grid !important;
+  grid-template-columns:30% 30% 40% !important;
+  gap:0 !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+  box-sizing:border-box !important;
+}
+
+/* ===== 30% INPUT ===== */
+.input-column {
+  grid-column:1 !important;
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+
+/* ===== 30% INFORMATION ===== */
+.info-column {
+  grid-column:2 !important;
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+
+/* ===== 40% REPORT + FINDING ===== */
+.report-column {
+  grid-column:3 !important;
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  position:sticky !important;
+  top:0 !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+
+/* Kill any old width constraints/gaps inside the 40% report column. */
+.report-column,
+.report-column > *,
+.report-column .panel {
+  max-width:none !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+.report-column .panel + .panel {
+  margin-top:0 !important;
+}
+
+/* Prevent old responsive/column rules from introducing spacing. */
+.input-column,
+.info-column,
+.report-column {
+  float:none !important;
+  left:auto !important;
+  right:auto !important;
+}
+
+/* ===== DESKTOP ONLY: FORCE 30/30/40 ===== */
+@media (min-width:1101px) {
+  .page {
+    width:100vw !important;
+    grid-template-columns:30vw 30vw 40vw !important;
+  }
+
+  .input-column {
+    width:30vw !important;
+    max-width:30vw !important;
+  }
+
+  .info-column {
+    width:30vw !important;
+    max-width:30vw !important;
+  }
+
+  .report-column {
+    width:40vw !important;
+    max-width:40vw !important;
+  }
+}
+</style>
+
+
+<style id="option10-actual-30-30-40">
+/* Full viewport is the reference: 100% */
+html, body {
+  width:100vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* 100% total */
+.page {
+  width:100vw !important;
+  height:100vh !important;
+  display:grid !important;
+  grid-template-columns:60vw 40vw !important;
+  gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* LEFT 60% */
+.page > .main {
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* Left content fills the 60% */
+.page > .main > .work {
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* INPUT + INFORMATION = 60%, split exactly 50/50 */
+.page > .main .workspace {
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  height:100vh !important;
+  display:grid !important;
+  grid-template-columns:30vw 30vw !important;
+  gap:0 !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  box-sizing:border-box !important;
+}
+
+/* EXACT 30% INPUT */
+.page > .main .workspace > .input-area {
+  width:30vw !important;
+  min-width:30vw !important;
+  max-width:30vw !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+
+/* EXACT 30% INFORMATION */
+.page > .main .workspace > .info-area {
+  width:30vw !important;
+  min-width:30vw !important;
+  max-width:30vw !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+
+/* No independent scrollbar on either left column */
+.page > .main .workspace > .input-area,
+.page > .main .workspace > .info-area {
+  overflow:visible !important;
+}
+
+/* RIGHT 40% — already correct, force it against viewport */
+.page > .report-column {
+  width:40vw !important;
+  min-width:40vw !important;
+  max-width:40vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  position:sticky !important;
+  top:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+
+/* Absolutely no outer gap */
+.page,
+.page > .main,
+.page > .report-column,
+.workspace,
+.input-area,
+.info-area {
+  column-gap:0 !important;
+  row-gap:0 !important;
+}
+
+/* Preserve internal spacing inside panels/controls. */
+.input-area .panel,
+.info-area .panel {
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+</style>
+
+
+<style id="option10-real-30-30-40-final">
+*,
+*::before,
+*::after {
+  box-sizing:border-box !important;
+}
+
+html, body {
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* FULL WIDTH = 100% */
+.page {
+  width:100vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  flex-direction:row !important;
+  gap:0 !important;
+  overflow:hidden !important;
+}
+
+/* LEFT 60% */
+.page > .main {
+  width:60vw !important;
+  flex:0 0 60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+.page > .main > .work {
+  width:60vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* INPUT 30% + INFORMATION 30% */
+.page > .main .workspace {
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  height:100vh !important;
+  display:grid !important;
+  grid-template-columns:30vw 30vw !important;
+  grid-template-rows:auto !important;
+  gap:0 !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  align-items:start !important;
+}
+
+/* INPUT = 30% OF FULL VIEWPORT */
+.page > .main .workspace .input-area {
+  grid-column:1 !important;
+  width:30vw !important;
+  min-width:30vw !important;
+  max-width:30vw !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+}
+
+/* INFORMATION = 30% OF FULL VIEWPORT */
+.page > .main .workspace .info-area {
+  grid-column:2 !important;
+  width:30vw !important;
+  min-width:30vw !important;
+  max-width:30vw !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+}
+
+/* RIGHT REPORT/FINDING = 40% OF FULL VIEWPORT */
+.page > .report-column {
+  width:40vw !important;
+  flex:0 0 40vw !important;
+  min-width:40vw !important;
+  max-width:40vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  position:relative !important;
+  top:auto !important;
+  right:auto !important;
+  overflow:hidden !important;
+}
+
+/* Make report/finding fill the complete 40% without outer gaps. */
+.page > .report-column > *,
+.page > .report-column .panel {
+  width:100% !important;
+  max-width:none !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+.page > .report-column .panel + .panel {
+  margin-top:0 !important;
+}
+</style>
+
+
+<style id="option10-final-actual-parent-fix">
+/* =========================================================
+   OPTION 10 — FINAL ACTUAL DOM FIX
+   Browser viewport = 100%
+   .main = 60% workspace + 40% report
+   .workspace = 30% input + 30% information
+   No gap between the three areas.
+   ========================================================= */
+
+html, body {
+  width:100vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* Main really contains .work AND .report-column. */
+.main {
+  width:100vw !important;
+  min-width:100vw !important;
+  max-width:100vw !important;
+  height:100vh !important;
+  display:grid !important;
+  grid-template-columns:60vw 40vw !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+  gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* LEFT 60% */
+.main > .work {
+  grid-column:1 !important;
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* Shared scrollbar belongs to the whole left 60%. */
+.main > .work > .shared-scroll {
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+}
+
+/* Remove the old page inset that changes the measured width. */
+.main > .work .page {
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* EXACT 30% + 30% inside the 60% workspace */
+.main > .work .workspace {
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  display:grid !important;
+  grid-template-columns:30vw 30vw !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+  gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  align-items:start !important;
+}
+
+/* INPUT = 30% of viewport */
+.main > .work .workspace > .input-area {
+  grid-column:1 !important;
+  width:30vw !important;
+  min-width:30vw !important;
+  max-width:30vw !important;
+  margin:0 !important;
+  padding:0 3px 0 0 !important;
+  box-sizing:border-box !important;
+}
+
+/* INFORMATION = 30% of viewport */
+.main > .work .workspace > .info-area {
+  grid-column:2 !important;
+  width:30vw !important;
+  min-width:30vw !important;
+  max-width:30vw !important;
+  margin:0 !important;
+  padding:0 0 0 3px !important;
+  box-sizing:border-box !important;
+}
+
+/* RIGHT 40% */
+.main > .report-column {
+  grid-column:2 !important;
+  width:40vw !important;
+  min-width:40vw !important;
+  max-width:40vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+
+/* Report + Finding fill all of the right 40%. */
+.main > .report-column > .report-panel {
+  width:40vw !important;
+  min-width:40vw !important;
+  max-width:40vw !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  flex:1 1 0 !important;
+}
+
+.main > .report-column > .report-panel + .report-panel {
+  margin-top:0 !important;
+}
+
+/* No horizontal layout gap anywhere in the three-column geometry. */
+.main,
+.main > .work,
+.main > .work .workspace,
+.main > .report-column {
+  column-gap:0 !important;
+  row-gap:0 !important;
+  gap:0 !important;
+}
+
+/* Keep the original internal panel/control spacing. */
+</style>
+
+</head>
+
+<body>
+<div class="app">
+
+  <!-- LEFTMOST NAVIGATION: same placement/role as Option 7 -->
+<main class="main">
+    <section class="work">
+      <div class="shared-scroll" id="sharedScroll">
+        <div class="page">
+          <div class="workspace">
+
+            <!-- ================= INPUT AREA ================= -->
+            <section class="input-area">
+
+              <div class="section" id="invasion">
+                <div class="section-title">
+                  <span>頭頸部癌取扱い規約</span>
+                  <span>2018</span>
+                  <span>第6版</span>
+                  <span>上咽頭　原発不明頸部リンパ節EBV陽性</span>
+                </div>
+
+                <div class="sub-title">浸潤</div>
+
+                <div class="infiltration-grid">
+                  <div class="infiltration-head">&nbsp;</div>
+                  <div class="infiltration-head">分布</div>
+                  <div class="infiltration-head">転移腫瘍巣最大径</div>
+
+                  <label class="infiltration-option">
+                    <input class="radio-toggle" type="radio" name="invasion"
+                           value="輪状軟骨の尾側縁より上方" data-toggle-group="invasion">
+                    輪状軟骨の尾側縁より上方
+                  </label>
+                  <label class="distribution">
+                    <input class="radio-toggle" type="radio" name="distribution"
+                           value="一側" data-toggle-group="distribution">
+                    一側
+                  </label>
+                  <div class="maxsize">
+                    <input id="maxDiameter" type="text" inputmode="decimal">
+                    <span>cm</span>
+                  </div>
+
+                  <label class="infiltration-option">
+                    <input class="radio-toggle" type="radio" name="invasion"
+                           value="咽頭後リンパ節転移" data-toggle-group="invasion">
+                    咽頭後リンパ節転移
+                  </label>
+                  <label class="distribution">
+                    <input class="radio-toggle" type="radio" name="distribution"
+                           value="両側" data-toggle-group="distribution">
+                    両側
+                  </label>
+                  <div class="maxsize"></div>
+
+                  <label class="infiltration-option">
+                    <input class="radio-toggle" type="radio" name="invasion"
+                           value="頸部リンパ節転移" data-toggle-group="invasion">
+                    頸部リンパ節転移
+                  </label>
+                  <div class="distribution"></div>
+                  <div class="maxsize"></div>
+
+                  <label class="infiltration-option">
+                    <input class="radio-toggle" type="radio" name="invasion"
+                           value="輪状軟骨の尾側縁より下方" data-toggle-group="invasion">
+                    輪状軟骨の尾側縁より下方
+                  </label>
+                  <div class="distribution"></div>
+                  <div class="maxsize"></div>
+                </div>
+              </div>
+
+              <div class="section" id="cervicalNodes">
+                <div class="section-title">
+                  <span>頸部リンパ節</span>
+                  <span class="rule">転移数・郭清数を入力</span>
+                </div>
+
+                <table class="node-table">
+                  <thead>
+                    <tr>
+                      <th>番号</th>
+                      <th>転移数</th>
+                      <th>郭清数</th>
+                      <th>名称</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="group"><td>cervical</td><td></td><td></td><td>頸部</td></tr>
+                    <tr><td>submental</td><td><input class="node-input" data-node="submental" data-type="metastasis"></td><td><input class="node-input" data-node="submental" data-type="dissection"></td><td>オトガイ下</td></tr>
+                    <tr><td>submandibular</td><td><input class="node-input" data-node="submandibular" data-type="metastasis"></td><td><input class="node-input" data-node="submandibular" data-type="dissection"></td><td>顎下</td></tr>
+                    <tr><td>preglandular</td><td><input class="node-input" data-node="preglandular" data-type="metastasis"></td><td><input class="node-input" data-node="preglandular" data-type="dissection"></td><td>腺前</td></tr>
+                    <tr><td>prevascular</td><td><input class="node-input" data-node="prevascular" data-type="metastasis"></td><td><input class="node-input" data-node="prevascular" data-type="dissection"></td><td>血管前</td></tr>
+                    <tr><td>retrovascular</td><td><input class="node-input" data-node="retrovascular" data-type="metastasis"></td><td><input class="node-input" data-node="retrovascular" data-type="dissection"></td><td>血管後</td></tr>
+                    <tr><td>retroglandular</td><td><input class="node-input" data-node="retroglandular" data-type="metastasis"></td><td><input class="node-input" data-node="retroglandular" data-type="dissection"></td><td>腺後</td></tr>
+                    <tr class="group"><td>anterior</td><td></td><td></td><td>前頸部</td></tr>
+                    <tr><td>anterior superficial cervical</td><td><input class="node-input" data-node="anterior superficial cervical" data-type="metastasis"></td><td><input class="node-input" data-node="anterior superficial cervical" data-type="dissection"></td><td>前頸静脈</td></tr>
+                    <tr><td>prelaryngeal</td><td><input class="node-input" data-node="prelaryngeal" data-type="metastasis"></td><td><input class="node-input" data-node="prelaryngeal" data-type="dissection"></td><td>喉頭前</td></tr>
+                    <tr><td>prethyroid</td><td><input class="node-input" data-node="prethyroid" data-type="metastasis"></td><td><input class="node-input" data-node="prethyroid" data-type="dissection"></td><td>甲状腺前</td></tr>
+                    <tr><td>pretracheal</td><td><input class="node-input" data-node="pretracheal" data-type="metastasis"></td><td><input class="node-input" data-node="pretracheal" data-type="dissection"></td><td>気管前</td></tr>
+                    <tr><td>paratracheal</td><td><input class="node-input" data-node="paratracheal" data-type="metastasis"></td><td><input class="node-input" data-node="paratracheal" data-type="dissection"></td><td>気管傍</td></tr>
+                    <tr><td>para-and retropharyngeal</td><td><input class="node-input" data-node="para-and retropharyngeal" data-type="metastasis"></td><td><input class="node-input" data-node="para-and retropharyngeal" data-type="dissection"></td><td>咽頭周囲</td></tr>
+                    <tr class="group"><td>lateral cervical</td><td></td><td></td><td>側頸</td></tr>
+                    <tr><td>superficial cervical</td><td><input class="node-input" data-node="superficial cervical" data-type="metastasis"></td><td><input class="node-input" data-node="superficial cervical" data-type="dissection"></td><td>浅頸</td></tr>
+                    <tr><td>lateral deep cervical</td><td><input class="node-input" data-node="lateral deep cervical" data-type="metastasis"></td><td><input class="node-input" data-node="lateral deep cervical" data-type="dissection"></td><td>深頸</td></tr>
+                    <tr><td>spinal accessory</td><td><input class="node-input" data-node="spinal accessory" data-type="metastasis"></td><td><input class="node-input" data-node="spinal accessory" data-type="dissection"></td><td>副神経</td></tr>
+                    <tr><td>supraclavicular</td><td><input class="node-input" data-node="supraclavicular" data-type="metastasis"></td><td><input class="node-input" data-node="supraclavicular" data-type="dissection"></td><td>鎖骨上窩</td></tr>
+                    <tr><td>internal jugular chain</td><td><input class="node-input" data-node="internal jugular chain" data-type="metastasis"></td><td><input class="node-input" data-node="internal jugular chain" data-type="dissection"></td><td>内深頸</td></tr>
+                    <tr><td>superior internal jugular</td><td><input class="node-input" data-node="superior internal jugular" data-type="metastasis"></td><td><input class="node-input" data-node="superior internal jugular" data-type="dissection"></td><td>上内深頸</td></tr>
+                    <tr><td>mid internal jugular</td><td><input class="node-input" data-node="mid internal jugular" data-type="metastasis"></td><td><input class="node-input" data-node="mid internal jugular" data-type="dissection"></td><td>中内深頸</td></tr>
+                    <tr><td>inferior internal jugular</td><td><input class="node-input" data-node="inferior internal jugular" data-type="metastasis"></td><td><input class="node-input" data-node="inferior internal jugular" data-type="dissection"></td><td>下内深頸</td></tr>
+                    <tr class="group"><td>parotid nodes</td><td></td><td></td><td>耳下腺</td></tr>
+                    <tr><td>preauricular parotid</td><td><input class="node-input" data-node="preauricular parotid" data-type="metastasis"></td><td><input class="node-input" data-node="preauricular parotid" data-type="dissection"></td><td>耳介前</td></tr>
+                    <tr><td>infra-auricular parotid</td><td><input class="node-input" data-node="infra-auricular parotid" data-type="metastasis"></td><td><input class="node-input" data-node="infra-auricular parotid" data-type="dissection"></td><td>耳介下</td></tr>
+                    <tr><td>intraglandular parotid</td><td><input class="node-input" data-node="intraglandular parotid" data-type="metastasis"></td><td><input class="node-input" data-node="intraglandular parotid" data-type="dissection"></td><td>耳下腺内</td></tr>
+                    <tr class="group"><td>Other</td><td></td><td></td><td>pM1(LYM)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="section" id="pnInput">
+                <div class="section-title">pN / pMX 入力</div>
+                <div class="pn-box">
+                  <div class="pn-top">
+                    <div class="pn-label">total</div>
+                    <div class="pn-content">
+                      <div class="count-row">
+                        <div class="count-cell">
+                          <div class="head">転移数</div>
+                          <input id="totalMetastasis" type="number" min="0" value="0">
+                        </div>
+                        <div class="count-cell">
+                          <div class="head">郭清数</div>
+                          <input id="totalDissection" type="number" min="0" value="0">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pn-row">
+                    <span class="pn-label" style="margin:-5px 0 -5px -8px;">pNX</span>
+                    <input id="pnxValue" type="text">
+                    <span class="pmx-label">pMX(LYM)</span>
+                    <input id="pmxValue" type="text">
+                  </div>
+
+                  <div class="pn-row">
+                    <span class="pn-label" style="margin:-5px 8px -5px -8px;">完成式</span>
+                    <span id="formula">pN0 [total(0/0): (/)]</span>
+                  </div>
+
+                  <div class="instruction">
+                    ↑　下の pNXコピーボタン を押して任意の場所に貼り付けてください
+                  </div>
+
+                  <div class="actions">
+                    <button type="button" id="copyPNX">pNX[(/)]をコピー</button>
+                    <button type="button" id="clearData">入力したデータを消す</button>
+                  </div>
+                </div>
+              </div>
+
+            </section>
+
+            <!-- ================= INFORMATION AREA ================= -->
+            <section class="info-area">
+
+              <div class="section" id="lymphInfo">
+                <div class="section-title">リンパ節</div>
+                <table class="info-table">
+                  <tr><td>pNX</td><td>評価不能</td></tr>
+                  <tr><td>pN0</td><td>転移無し</td></tr>
+                  <tr><td>pN1</td><td>輪状軟骨の尾側縁より上方の一側及び両側頸部リンパ節転移で6cm以下</td></tr>
+                  <tr><td>pN2</td><td>輪状軟骨の尾側縁より上方の両側頸部リンパ節転移で最大径が6cm以下</td></tr>
+                  <tr><td>pN3</td><td>最大径6cmを超える頸部リンパ節転移<br>輪状軟骨の尾側縁より下方に進展</td></tr>
+                </table>
+
+                <div class="note">
+                  <strong>!</strong>　正中リンパ節は同側リンパ節である
+                </div>
+
+                <table class="table-small">
+                  <thead>
+                    <tr>
+                      <th>pNリンパ節転移判定</th>
+                      <th>最大径</th>
+                      <th>6cm以下</th>
+                      <th>6cm以上</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td rowspan="2">輪状軟骨尾側縁より上方</td>
+                      <td>咽頭後リンパ節転移</td>
+                      <td>1</td><td>1</td>
+                    </tr>
+                    <tr>
+                      <td>頸部リンパ節転移</td>
+                      <td>1</td><td>2</td>
+                    </tr>
+                    <tr>
+                      <td>輪状軟骨尾側縁より下方</td>
+                      <td></td>
+                      <td>3</td><td>3</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="section" id="regionalNodes">
+                <div class="section-title">頭頸部癌領域リンパ節</div>
+                <div class="note">
+                  ◇　所属リンパ節(regionaI lymph nodes；頸域リンパ節) 日本癌治療学会リンパ節規約準拠(頭頸部癌規約第5版)
+                </div>
+                <ul class="info-list">
+                  <li>用語の不統一により領域リンパ節とされている。</li>
+                  <li>正中のリンパ節は同側にふくめる。</li>
+                  <li>① 頸部リンパ節 cervical nodes</li>
+                  <li>オトガイ下リンパ節　submental nodes</li>
+                  <li>顎下リンパ節　submandibular nodes</li>
+                  <li>腺前リンパ節　preglandular nodes</li>
+                  <li>血管前リンパ節　prevascular nodes</li>
+                  <li>血管後リンパ節　retrovascular nodes</li>
+                  <li>腺後リンパ節　retroglandular nodes</li>
+                  <li>前頸部リンパ節　anterior nodes</li>
+                  <li>前頸静脈リンパ節　anterior superficial cervical nodes</li>
+                  <li>喉頭前リンパ節　prelaryngeal nodes</li>
+                  <li>甲状腺前リンパ節　prethyroid nodes</li>
+                  <li>気管前リンパ節　pretracheal nodes</li>
+                  <li>気管傍リンパ節　paratracheal nodes</li>
+                  <li>咽頭周囲リンパ節　para-and retropharyngeal nodes</li>
+                  <li>側頸リンパ節　lateral cervical nodes</li>
+                  <li>浅頸リンパ節　superficial cervical nodes</li>
+                  <li>深頸リンパ節　lateral deep cervical nodes</li>
+                  <li>副神経リンパ節　spinal accessory nodes</li>
+                  <li>鎖骨上リンパ節　supraclavicular nodes</li>
+                  <li>内深頸リンパ節　internal jugular chain</li>
+                  <li>上内深頸リンパ節　superior internal jugular nodes</li>
+                  <li>中内深頸リンパ節　mid internal jugular nodes</li>
+                  <li>下内深頸リンパ節　inferior internal jugular nodes</li>
+                  <li>その他のリンパ節：以下は領域リンパ節ではない！</li>
+                  <li>② 耳下腺リンパ節　parotid nodes</li>
+                  <li>耳介前リンパ節　preauricular parotid nodes</li>
+                  <li>耳介下リンパ節　infra-auricular parotid nodes</li>
+                  <li>耳下腺内リンパ節　intraglandular parotid nodes</li>
+                </ul>
+              </div>
+
+            </section>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REPORT / FINDING ================= -->
+    <aside class="report-column">
+
+      <div class="report-panel">
+        <div class="report-header">
+          <span>Report</span>
+          <span>Reflect your selections and inputs.</span>
+        </div>
+        <div id="reportOutput" class="report-output">No selection or input yet.</div>
+        <div class="panel-footer">
+          <button class="copy-button" type="button" id="copyReport">Copy of the report</button>
+        </div>
+      </div>
+
+      <div class="report-panel">
+        <div class="finding-header">
+          <span>Finding</span>
+          <span>Enter the search text here.</span>
+        </div>
+        <textarea id="finding" class="finding-output" placeholder="Enter your findings here..."></textarea>
+        <div class="panel-footer">
+          <button class="copy-button" type="button" id="copyFinding">Copy of finding</button>
+        </div>
+      </div>
+
+    </aside>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  function goHome(){
+    window.location.href="index.html";
+  }
+
+  /* Navigation is leftmost and jumps inside the shared clinical scroll area. */
+  document.querySelectorAll(".nav button[data-target]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var target=document.getElementById(btn.dataset.target);
+      if(target){
+        target.scrollIntoView({behavior:"smooth",block:"start"});
+      }
+    });
+  });
+
+  /* Radio buttons deliberately support click-to-deselect. */
+  document.querySelectorAll('input[type="radio"][data-toggle-group]').forEach(function(radio){
+    radio.addEventListener("mousedown",function(){
+      radio.dataset.wasChecked=radio.checked?"1":"0";
+    });
+    radio.addEventListener("click",function(){
+      if(radio.dataset.wasChecked==="1") radio.checked=false;
+      updateAll();
+    });
+  });
+
+  function selectedValue(name){
+    var checked=document.querySelector('input[name="'+name+'"]:checked');
+    return checked ? checked.value : "";
+  }
+
+  function updateFormula(){
+    var tm=document.getElementById("totalMetastasis").value || "0";
+    var td=document.getElementById("totalDissection").value || "0";
+    var pnx=document.getElementById("pnxValue").value.trim();
+    var result=pnx || "pN0";
+    document.getElementById("formula").textContent =
+      result+" [total("+tm+"/"+td+"): (/)]";
+  }
+
+  function buildReport(){
+    var lines=[];
+    var invasion=selectedValue("invasion");
+    var distribution=selectedValue("distribution");
+    var diameter=document.getElementById("maxDiameter").value.trim();
+
+    if(invasion) lines.push("浸潤: "+invasion);
+    if(distribution) lines.push("分布: "+distribution);
+    if(diameter) lines.push("転移腫瘍巣最大径: "+diameter+" cm");
+
+    var nodeValues=[];
+    document.querySelectorAll(".node-input").forEach(function(el){
+      var value=el.value.trim();
+      if(value!==""){
+        nodeValues.push(
+          el.dataset.node+" ("+
+          (el.dataset.type==="metastasis"?"転移数":"郭清数")+
+          "): "+value
+        );
+      }
+    });
+
+    if(nodeValues.length){
+      lines.push("");
+      lines.push("頸部リンパ節:");
+      lines.push.apply(lines,nodeValues);
+    }
+
+    var tm=document.getElementById("totalMetastasis").value || "0";
+    var td=document.getElementById("totalDissection").value || "0";
+    var pnx=document.getElementById("pnxValue").value.trim();
+    var pmx=document.getElementById("pmxValue").value.trim();
+
+    lines.push("");
+    lines.push("total: 転移数 "+tm+" / 郭清数 "+td);
+    if(pnx) lines.push("pNX: "+pnx);
+    if(pmx) lines.push("pMX(LYM): "+pmx);
+    lines.push("完成式: "+document.getElementById("formula").textContent);
+
+    return lines.length ? lines.join("\n") : "No selection or input yet.";
+  }
+
+  function updateAll(){
+    updateFormula();
+    document.getElementById("reportOutput").textContent=buildReport();
+  }
+
+  document.querySelectorAll("input").forEach(function(el){
+    if(el.type!=="radio"){
+      el.addEventListener("input",updateAll);
+      el.addEventListener("change",updateAll);
+    }
+  });
+
+  document.getElementById("copyPNX").addEventListener("click",function(){
+    var tm=document.getElementById("totalMetastasis").value || "0";
+    var td=document.getElementById("totalDissection").value || "0";
+    navigator.clipboard.writeText("pNX[("+tm+"/"+td+")]" ).catch(function(){});
+  });
+
+  document.getElementById("copyReport").addEventListener("click",function(){
+    navigator.clipboard.writeText(document.getElementById("reportOutput").textContent).catch(function(){});
+  });
+
+  document.getElementById("copyFinding").addEventListener("click",function(){
+    navigator.clipboard.writeText(document.getElementById("finding").value).catch(function(){});
+  });
+
+  document.getElementById("clearData").addEventListener("click",function(){
+    document.querySelectorAll("input").forEach(function(el){
+      if(el.type==="radio" || el.type==="checkbox"){
+        el.checked=false;
+      }else if(el.id==="totalMetastasis" || el.id==="totalDissection"){
+        el.value="0";
+      }else{
+        el.value="";
+      }
+    });
+    updateAll();
+  });
+
+  updateAll();
+})();
+</script>
+</body>
+</html>

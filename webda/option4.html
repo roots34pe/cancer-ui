@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Option 4 - Oral Pathology Report</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#eef7fb;
+  --panel:#dff0f8;
+  --panel2:#eaf5fa;
+  --head:#5d91ad;
+  --head2:#78a9bf;
+  --line:#b8d4e1;
+  --input:#fff;
+  --text:#17313e;
+  --nav:#356d89;
+  --nav2:#4d87a0;
+  --accent:#4f91ad;
+}
+html,body{margin:0;width:100%;height:100%;font-family:"Yu Gothic","Meiryo",Arial,sans-serif;color:var(--text);font-size:13px;background:var(--bg)}
+button,input,textarea{font:inherit}
+.app{height:100vh;display:block;overflow:hidden}
+.nav{background:linear-gradient(180deg,var(--nav),#2d6079);color:#fff;padding:12px 9px;overflow:auto}
+.brand{font-size:16px;font-weight:700;padding:9px 7px 12px;border-bottom:1px solid rgba(255,255,255,.3);margin-bottom:9px}
+.nav button{display:block;width:100%;padding:9px 8px;margin:2px 0;border:0;border-radius:4px;background:transparent;color:#fff;text-align:left;cursor:pointer}
+.nav button:hover,.nav button.active{background:var(--nav2)}
+.page{min-width:0;height:100vh;display:flex;flex-direction:column}
+.topbar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 13px;background:#f5fbfe;border-bottom:1px solid var(--line)}
+.topbar h1{margin:0;font-size:17px;color:#315e74}
+.clear{border:1px solid #6b98ac;background:#fff;color:#315e74;border-radius:3px;padding:6px 13px;cursor:pointer}
+.workspace{
+  flex:1;min-height:0;display:grid;
+  grid-template-columns:30% 30% 40%;
+  gap:0;padding:0;overflow:hidden
+}
+.pane{min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden;padding-right:0}
+.pane::-webkit-scrollbar{width:9px}.pane::-webkit-scrollbar-thumb{background:#a8c7d5;border-radius:7px}
+.section{border:1px solid var(--line);background:var(--panel);margin-bottom:8px;border-radius:2px;overflow:hidden}
+.section-title{min-height:27px;padding:5px 8px;background:var(--head);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.section-title .sub{font-weight:400;font-size:11px}
+.rows{padding:3px 6px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:8px;align-items:center;min-height:25px;padding:2px 4px}
+.row:nth-child(even){background:rgba(255,255,255,.35)}
+.row .en{color:#365f70}
+.radio-list{padding:3px 6px}
+.radio-list label,.check-list label{display:flex;align-items:center;gap:6px;padding:4px 2px;min-height:24px}
+.radio-list label:nth-child(even),.check-list label:nth-child(even){background:rgba(255,255,255,.28)}
+.radio-list.two{display:grid;grid-template-columns:1fr 1fr;gap:1px 12px}
+.radio-list.three{display:grid;grid-template-columns:repeat(3,1fr);gap:1px 8px}
+.check-list{padding:4px 7px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px 8px}
+input[type=radio],input[type=checkbox]{accent-color:#477f99}
+.none{font-weight:700;white-space:nowrap}
+.fieldrow{display:flex;align-items:center;gap:5px;padding:4px 7px;min-height:30px}
+.fieldrow label{min-width:80px}
+input[type=text],input[type=number]{height:23px;border:1px solid #abc6d3;background:#fff;border-radius:2px;padding:2px 6px;width:88px;color:#17313e}
+input[readonly]{background:#f7fbfd}
+.unit{min-width:22px}
+.note{padding:6px 8px;line-height:1.55;font-size:11px;background:var(--panel2)}
+.measure{display:grid;grid-template-columns:100px 88px 35px 115px 88px 35px;align-items:center;gap:4px;padding:5px 7px}
+.measure input{width:100%}
+.mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3px 12px;padding:5px 8px}
+.mini-grid label{display:flex;align-items:center;gap:5px}
+.copy{border:1px solid #fff;background:#71838d;color:#fff;padding:7px 18px;border-radius:2px;cursor:pointer}
+.copy:hover{background:#5f727d}
+.report-pane{min-width:0;min-height:0;display:flex;flex-direction:column;gap:0;overflow:hidden}
+.report-box{min-height:0;background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column}
+.report-box.diag{flex:0 0 24%}.report-box.find{flex:0 0 32%}.report-box.rep{flex:1}
+.box-title{background:var(--head);color:#fff;padding:6px 9px;font-weight:700;display:flex;justify-content:space-between}
+.box-body{position:relative;flex:1;min-height:0;padding:7px}
+.box-body textarea{width:100%;height:100%;resize:none;border:1px solid #b3cedb;background:#fff;padding:8px 10px;color:#17313e;line-height:1.55}
+.actions{position:absolute;right:10px;bottom:10px}
+.info-empty{padding:7px 9px;color:#66818f}
+.tag{display:inline-block;padding:2px 6px;margin:2px 4px 2px 0;border:1px solid #a6c3d0;background:#f5fbfd;border-radius:2px}
+.small{font-size:11px}
+@media(max-width:1300px){
+  .workspace{grid-template-columns:minmax(390px,1fr) minmax(390px,1fr) minmax(500px,1.3fr)}
+}
+@media(max-width:1000px){
+  .app{grid-template-columns:1fr}.nav{height:auto;display:flex;gap:3px;overflow:auto}.brand{display:none}.nav button{width:auto;white-space:nowrap}
+  .workspace{grid-template-columns:1fr;height:auto;overflow:auto}.page{height:auto}.pane{overflow:visible}.report-pane{min-height:700px;overflow:visible}
+}
+</style>
+
+<style id="clean-exact-30-30-40">
+/* Exact desktop layout: Input 30% | Information 30% | Report 40% */
+html, body {
+  width:100%;
+  height:100%;
+  margin:0;
+  overflow:hidden;
+}
+
+.app {
+  width:100%;
+  height:100vh;
+  overflow:hidden;
+}
+
+.page {
+  width:100%;
+  height:100vh;
+  min-width:0;
+  margin:0;
+  overflow:hidden;
+}
+
+.workspace {
+  width:100%;
+  height:calc(100vh - 48px);
+  min-height:0;
+  display:grid;
+  grid-template-columns:30% 30% 40%;
+  gap:0;
+  padding:0;
+  overflow:hidden;
+  box-sizing:border-box;
+}
+
+/* Exactly 30% Input and exactly 30% Information */
+.workspace > .pane {
+  width:100%;
+  min-width:0;
+  height:100%;
+  min-height:0;
+  box-sizing:border-box;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-right:0;
+}
+
+/* Exactly 40% Report, fixed so it never moves */
+.workspace > .report-pane {
+  position:fixed;
+  top:48px;
+  right:0;
+  width:40%;
+  height:calc(100vh - 48px);
+  min-width:0;
+  min-height:0;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  overflow:hidden;
+  background:var(--bg);
+  z-index:1000;
+}
+
+.workspace > .report-pane .report-box {
+  width:100%;
+  min-width:0;
+  margin:0;
+  box-sizing:border-box;
+}
+
+@media(max-width:1100px) {
+  /* Keep the requested ratio until mobile width. */
+  .workspace {
+    grid-template-columns:30% 30% 40%;
+  }
+}
+
+@media(max-width:700px) {
+  html, body { overflow:auto; }
+
+  .app, .page {
+    height:auto;
+    min-height:100vh;
+    overflow:visible;
+  }
+
+  .workspace {
+    height:auto;
+    min-height:0;
+    grid-template-columns:1fr;
+    overflow:visible;
+  }
+
+  .workspace > .pane {
+    height:auto;
+    overflow:visible;
+  }
+
+  .workspace > .report-pane {
+    position:relative;
+    top:auto;
+    right:auto;
+    width:100%;
+    height:auto;
+  }
+}
+</style>
+
+
+<style id="shared-text-info-scroll">
+/* Text/Input + Information must scroll together as one area. */
+html, body {
+  width:100% !important;
+  height:100% !important;
+  overflow:hidden !important;
+}
+
+.workspace {
+  position:relative !important;
+  width:100% !important;
+  height:calc(100vh - 48px) !important;
+  display:grid !important;
+  grid-template-columns:30% 30% 40% !important;
+  gap:0 !important;
+  padding:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  align-items:start !important;
+  box-sizing:border-box !important;
+}
+
+/* These two columns do NOT scroll individually. */
+.workspace > .pane {
+  width:100% !important;
+  min-width:0 !important;
+  height:auto !important;
+  min-height:100% !important;
+  overflow:visible !important;
+  padding-right:0 !important;
+  box-sizing:border-box !important;
+}
+
+/* Reporting remains completely fixed and outside the shared scrollbar. */
+.workspace > .report-pane {
+  position:fixed !important;
+  top:48px !important;
+  right:0 !important;
+  width:40% !important;
+  height:calc(100vh - 48px) !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  z-index:1000 !important;
+}
+
+/* Preserve the 40% report width and remove internal gaps. */
+.workspace > .report-pane .report-box {
+  width:100% !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+
+@media(max-width:700px) {
+  html, body { overflow:auto !important; }
+
+  .workspace {
+    height:auto !important;
+    display:block !important;
+    overflow:visible !important;
+  }
+
+  .workspace > .pane {
+    height:auto !important;
+    min-height:0 !important;
+    overflow:visible !important;
+  }
+
+  .workspace > .report-pane {
+    position:relative !important;
+    top:auto !important;
+    right:auto !important;
+    width:100% !important;
+    height:auto !important;
+  }
+}
+</style>
+
+</head>
+<body>
+<div class="app">
+<main class="page">
+<header class="topbar">
+  <h1>口腔病理レポート作成支援　UICC/TNM分類第8版</h1>
+  <button class="clear" id="clearAll">入力をクリア</button>
+</header>
+
+<div class="workspace">
+
+<!-- ================= INPUT ================= -->
+<section class="pane" id="inputPane">
+
+<div class="section">
+ <div class="section-title"><span>病期分類</span><span class="sub">日本規約／UICC-TNM分類第8版</span><span class="sub">（未実装）</span></div>
+ <div class="measure">
+  <label>T <input data-key="T"></label><span></span>
+  <label>N <input data-key="N"></label><span></span>
+ </div>
+ <div class="measure">
+  <label>M <input data-key="M"></label><span></span>
+  <label>Stage <input data-key="Stage"></label><span></span>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 占拠部位</span><span class="sub">日本規約　　UICC分類口腔6部位</span><span class="none"><input type="radio" name="site" value="NONE"> 選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="site" value="口唇" data-en="lip">口唇</label>
+  <label><input type="radio" name="site" value="上唇（赤唇部）">上唇（赤唇部）</label>
+  <label><input type="radio" name="site" value="下唇（赤唇部）">下唇（赤唇部）</label>
+  <label><input type="radio" name="site" value="唇交連">唇交連</label>
+  <label><input type="radio" name="site" value="口腔">口腔</label>
+  <label><input type="radio" name="site" value="頬粘膜" data-en="buccal mucosa">頬粘膜</label>
+  <label><input type="radio" name="site" value="上下唇の粘膜">上下唇の粘膜</label>
+  <label><input type="radio" name="site" value="頬後部">頬後部</label>
+  <label><input type="radio" name="site" value="上下頬歯槽溝（口腔前庭）">上下頬歯槽溝（口腔前庭）</label>
+  <label><input type="radio" name="site" value="上歯槽と歯肉（上歯肉/上顎歯肉）" data-en="maxillary gingival">上歯槽と歯肉（上歯肉/上顎歯肉）</label>
+  <label><input type="radio" name="site" value="下歯槽と歯肉（下歯肉/下顎歯肉）" data-en="mandibular gingival">下歯槽と歯肉（下歯肉/下顎歯肉）</label>
+  <label><input type="radio" name="site" value="硬口蓋" data-en="hard palate">硬口蓋</label>
+  <label><input type="radio" name="site" value="舌" data-en="Tongue">舌</label>
+  <label><input type="radio" name="site" value="舌背面と舌縁（舌前2/3）">舌背面と舌縁（舌前2/3）</label>
+  <label><input type="radio" name="site" value="舌下面（舌腹）">舌下面（舌腹）</label>
+  <label><input type="radio" name="site" value="口腔底/口底" data-en="floor of mouth">口腔底/口底</label>
+ </div>
+ <div class="note">■ UICC分類口腔6部位　　　! 悪性黒色腫は別とする<br>口腔癌：舌　上歯肉/上顎歯肉　下歯肉/下顎歯肉　頬粘膜　口腔底/口底　硬口蓋　＋口唇（UICC）<br>頭頸部癌：口唇　舌　口腔底　頬粘膜　硬口蓋　原発不明頸部リンパ節</div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 大きさ</span><span class="sub">日本規約</span><span class="none"><input type="checkbox" data-key="sizeNone"> 選択なし</span></div>
+ <div class="measure">
+  <label>長径</label><input type="number" data-key="長径"><span>mm</span>
+  <label>直交する短径</label><input type="number" data-key="短径"><span>mm</span>
+ </div>
+ <div class="measure">
+  <label>厚さ</label><input type="number" data-key="厚さ"><span>mm</span>
+  <label>近遠心径</label><input type="number" data-key="近遠心径"><span>mm</span>
+ </div>
+ <div class="measure"><label>頬舌径</label><input type="number" data-key="頬舌径"><span>mm</span></div>
+ <div class="mini-grid">
+  <label><input type="checkbox" data-key="厚さを記入する">厚さを記入する</label>
+  <label><input type="checkbox" data-key="近遠心径を記入する">近遠心径を記入する</label>
+  <label><input type="checkbox" data-key="頬舌径を記入する">頬舌径を記入する</label>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 深達度（mm）</span><span class="sub">日本規約</span></div>
+ <div class="note">深さDOI(depth of invasion)：仮想粘膜上皮基底層から癌浸潤最深部までの距離<br>厚さ：隆起部も含めた浸潤最深部までの距離（厚さ ＞ or = 深さ）</div>
+ <div class="fieldrow"><label>深さDOI</label><input type="number" data-key="DOI"><span class="unit">mm</span><label><input type="checkbox" data-key="深さを記入する">深さを記入する</label></div>
+ <div class="fieldrow"><label>厚さ</label><input type="number" data-key="厚さ_深達度"><span class="unit">mm</span><label><input type="checkbox" data-key="厚さを記入する_深達度">厚さを記入する</label></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 臨床型</span><span class="sub">日本規約</span><span>@ 割面より肉眼的に確認する</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="clinical" value="表在型">表在型</label>
+  <label><input type="radio" name="clinical" value="外向型">外向型</label>
+  <label><input type="radio" name="clinical" value="内向型">内向型</label>
+  <label><input type="radio" name="clinical" value="分類不能型">分類不能型</label>
+  <label class="none"><input type="radio" name="clinical" value="NONE">選択なし</label>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 組織型</span><span class="sub">日本規約</span><span class="none"><input type="radio" name="histology" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="histology" value="低異型度（軽度）口腔上皮異形成（OED）">低異型度（軽度）口腔上皮異形成（OED）</label>
+  <label><input type="radio" name="histology" value="低異型度（中等度）口腔上皮異形成（OED）">低異型度（中等度）口腔上皮異形成（OED）</label>
+  <label><input type="radio" name="histology" value="高異型度（中等度）口腔上皮異形成（OED）">高異型度（中等度）口腔上皮異形成（OED）</label>
+  <label><input type="radio" name="histology" value="高異型度（高度）口腔上皮異形成（OED）">高異型度（高度）口腔上皮異形成（OED）</label>
+  <label><input type="radio" name="histology" value="上皮内癌">上皮内癌</label>
+  <label><input type="radio" name="histology" value="扁平上皮癌">扁平上皮癌</label>
+  <label><input type="radio" name="histology" value="類基底扁平上皮癌">類基底扁平上皮癌</label>
+  <label><input type="radio" name="histology" value="紡錘細胞扁平上皮癌">紡錘細胞扁平上皮癌</label>
+  <label><input type="radio" name="histology" value="腺扁平上皮癌">腺扁平上皮癌</label>
+  <label><input type="radio" name="histology" value="リンパ上皮癌">リンパ上皮癌</label>
+  <label><input type="radio" name="histology" value="乳頭状扁平上皮癌">乳頭状扁平上皮癌</label>
+  <label><input type="radio" name="histology" value="無形成性扁平上皮癌">無形成性扁平上皮癌</label>
+  <label><input type="radio" name="histology" value="腺癌">腺癌</label>
+  <label><input type="radio" name="histology" value="粘表皮癌">粘表皮癌</label>
+  <label><input type="radio" name="histology" value="腺様嚢胞癌">腺様嚢胞癌</label>
+  <label><input type="radio" name="histology" value="多形腺腫癌">多形腺腫癌</label>
+  <label><input type="radio" name="histology" value="明細胞癌">明細胞癌</label>
+  <label><input type="radio" name="histology" value="基底細胞腺癌">基底細胞腺癌</label>
+  <label><input type="radio" name="histology" value="多形腺腫由来癌">多形腺腫由来癌</label>
+  <label><input type="radio" name="histology" value="エナメル上皮癌">エナメル上皮癌</label>
+  <label><input type="radio" name="histology" value="原発性骨内癌、NOS">原発性骨内癌、NOS</label>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 組織学的グレード分類</span><span class="sub">日本規約</span><span class="none"><input type="radio" name="gradeClass" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="gradeClass" value="GX">GX　分化度のgrade評価困難</label>
+  <label><input type="radio" name="gradeClass" value="G1">G1　高分化</label>
+  <label><input type="radio" name="gradeClass" value="G2">G2　中分化</label>
+  <label><input type="radio" name="gradeClass" value="G3">G3　低分化</label>
+  <label><input type="radio" name="gradeClass" value="G4">G4　未分化</label>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 頬骨浸潤　Bone invasion</span><span class="sub">日本規約</span><span class="none"><input type="radio" name="bone" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="bone" value="頬骨浸潤無し">頬骨浸潤無し</label>
+  <label><input type="radio" name="bone" value="骨皮質に限局した浸潤">骨皮質に限局した浸潤　BI-1</label>
+  <label><input type="radio" name="bone" value="頬骨骨髄を貫通した浸潤で下顎骨には達しない">頬骨骨髄を貫通した浸潤で下顎骨には達しない　BI-2</label>
+  <label><input type="radio" name="bone" value="下顎骨に達する骨浸潤">下顎骨に達する骨浸潤　BI-3　MC(+)</label>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 深達度</span><span class="sub">T　日本規約　T4因子：T4因子は部位により基準が変わるので注意</span><span class="none"><input type="radio" name="pt" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="pt" value="pTX">pTX</label>
+  <label><input type="radio" name="pt" value="pT0">pT0</label>
+  <label><input type="radio" name="pt" value="pTis">pTis</label>
+  <label><input type="radio" name="pt" value="pT1">pT1</label>
+  <label><input type="radio" name="pt" value="pT2">pT2</label>
+  <label><input type="radio" name="pt" value="pT3">pT3</label>
+  <label><input type="radio" name="pt" value="pT4a（口唇）">pT4a（口唇）</label>
+  <label><input type="radio" name="pt" value="pT4a（口腔）">pT4a（口腔）</label>
+  <label><input type="radio" name="pt" value="pT4b">pT4b</label>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 棘の浸潤様式</span><span class="sub">日本規約</span><span class="sub">記載推奨グレード B</span><span class="none"><input type="radio" name="YK" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="YK" value="YK-1">YK-1　境界明瞭</label>
+  <label><input type="radio" name="YK" value="YK-2">YK-2　境界にややみだれ</label>
+  <label><input type="radio" name="YK" value="YK-3">YK-3　境界不明瞭で大きい胞巣あり</label>
+  <label><input type="radio" name="YK" value="YK-4C">YK-4C　境界不明瞭で小型胞巣や索状浸潤</label>
+  <label><input type="radio" name="YK" value="YK-4D">YK-4D　境界不明瞭でばらばらな単細胞浸潤</label>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ WPOI (worst pattern of invasion)</span><span class="sub">AJCC staging manual第8版</span><span class="none"><input type="radio" name="WPOI" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="WPOI" value="POI-1">POI-1</label>
+  <label><input type="radio" name="WPOI" value="POI-2">POI-2</label>
+  <label><input type="radio" name="WPOI" value="POI-3">POI-3</label>
+  <label><input type="radio" name="WPOI" value="POI-4">POI-4</label>
+  <label><input type="radio" name="WPOI" value="WPOI-5">WPOI-5：浸潤先端部から1mm以上離れて腫瘍細胞が存在する</label>
+ </div>
+ <div class="note">! DOIが4mm以上の症例でWPOI-5があると局所再発の可能性が高くなるとされる</div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 水平断端（側方断端）</span><span class="sub">日本規約</span><span class="none"><input type="radio" name="pHM" value="NONE">選択なし</span></div>
+ <div class="fieldrow"><label><input type="radio" name="pHM" value="pHMX">pHMX</label><label>断端までの距離(mm)</label><input type="number" data-key="pHMdistance"></div>
+ <div class="radio-list"><label><input type="radio" name="pHM" value="pHM0">pHM0</label><label><input type="radio" name="pHM" value="pHM1">pHM1</label></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 垂直断端（深部断端）</span><span class="sub">日本規約</span><span class="none"><input type="radio" name="pVM" value="NONE">選択なし</span></div>
+ <div class="fieldrow"><label><input type="radio" name="pVM" value="pVMX">pVMX</label><label>断端までの距離(mm)</label><input type="number" data-key="pVMdistance"></div>
+ <div class="radio-list"><label><input type="radio" name="pVM" value="pVM0">pVM0</label><label><input type="radio" name="pVM" value="pVM1">pVM1</label></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 腫瘍の遺残</span><span class="sub">日本規約</span><span class="none"><input type="radio" name="residual" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="residual" value="RX">RX　評価困難</label>
+  <label><input type="radio" name="residual" value="R0">R0　遺残腫瘍なし</label>
+  <label><input type="radio" name="residual" value="R1">R1　顕微鏡的遺残</label>
+  <label><input type="radio" name="residual" value="R2">R2　肉眼的遺残</label>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ リンパ管浸潤</span><span class="sub">日本規約　　記載推奨グレード A</span><span class="none"><input type="radio" name="ly" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="ly" value="LyX">LyX</label>
+  <label><input type="radio" name="ly" value="Ly0">Ly0</label>
+  <label><input type="radio" name="ly" value="Ly1a">Ly1a　軽度</label>
+  <label><input type="radio" name="ly" value="Ly1b">Ly1b　中等度</label>
+  <label><input type="radio" name="ly" value="Ly1c">Ly1c　高度</label>
+ </div>
+ <div class="mini-grid"><label><input type="checkbox" data-key="D2-40">D2-40</label></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 静脈侵襲</span><span class="sub">日本規約　　記載推奨グレード A</span><span class="none"><input type="radio" name="v" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="v" value="VX">VX</label>
+  <label><input type="radio" name="v" value="V0">V0</label>
+  <label><input type="radio" name="v" value="V1a">V1a　軽度</label>
+  <label><input type="radio" name="v" value="V1b">V1b　中等度</label>
+  <label><input type="radio" name="v" value="V1c">V1c　高度</label>
+  <label><input type="radio" name="v" value="V2">V2　内腔的</label>
+ </div>
+ <div class="check-list"><label><input type="checkbox" data-key="Elastica-van Gieson">Elastica-van Gieson</label><label><input type="checkbox" data-key="Victoria blue HE">Victoria blue HE</label><label><input type="checkbox" data-key="CD34">CD34</label><label><input type="checkbox" data-key="CD31">CD31</label></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 神経周囲浸潤</span><span class="sub">日本規約　　記載推奨グレード A</span><span class="none"><input type="radio" name="pn" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="pn" value="PnX">PnX</label>
+  <label><input type="radio" name="pn" value="Pn0">Pn0</label>
+  <label><input type="radio" name="pn" value="Pn1a">Pn1a　軽度</label>
+  <label><input type="radio" name="pn" value="Pn1b">Pn1b　中等度</label>
+  <label><input type="radio" name="pn" value="Pn1c">Pn1c　高度</label>
+ </div>
+ <div class="note">免疫組織学染色追加</div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ リンパ節節外浸潤</span><span class="none"><input type="radio" name="ENE" value="NONE">選択なし</span></div>
+ <div class="radio-list"><label><input type="radio" name="ENE" value="ENE(-)">節外浸潤無し</label><label><input type="radio" name="ENE" value="ENE(+)">節外浸潤有り</label></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 遠隔転移</span><span class="sub">日本規約</span><span class="none"><input type="radio" name="pM" value="NONE">選択なし</span></div>
+ <div class="radio-list"><label><input type="radio" name="pM" value="pMX">pMX</label><label><input type="radio" name="pM" value="pM0">pM0</label><label><input type="radio" name="pM" value="pM1">pM1</label></div>
+ <div class="check-list">
+  <label><input type="checkbox" data-key="SKI">SKI</label><label><input type="checkbox" data-key="PLU">PLU</label><label><input type="checkbox" data-key="MAR">MAR</label><label><input type="checkbox" data-key="OSS">OSS</label>
+  <label><input type="checkbox" data-key="PLE">PLE</label><label><input type="checkbox" data-key="BRA">BRA</label><label><input type="checkbox" data-key="ADR">ADR</label><label><input type="checkbox" data-key="HEP">HEP</label>
+  <label><input type="checkbox" data-key="MEN">MEN</label><label><input type="checkbox" data-key="OVA">OVA</label><label><input type="checkbox" data-key="OTH">OTH</label><label><input type="checkbox" data-key="PER">PER</label>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 組織学的治療効果判定</span><span class="sub">日本規約</span><span class="sub">記載推奨グレード A</span><span class="none"><input type="radio" name="treatmentGrade" value="NONE">選択なし</span></div>
+ <div class="radio-list">
+  <label><input type="radio" name="treatmentGrade" value="Grade 0">Grade 0　無効</label>
+  <label><input type="radio" name="treatmentGrade" value="Grade 1">Grade 1　やや有効</label>
+  <label><input type="radio" name="treatmentGrade" value="Grade 1a">Grade 1a　ごく軽度の効果</label>
+  <label><input type="radio" name="treatmentGrade" value="Grade 1b">Grade 1b　軽度の効果</label>
+  <label><input type="radio" name="treatmentGrade" value="Grade 2">Grade 2　かなり有効</label>
+  <label><input type="radio" name="treatmentGrade" value="Grade 3">Grade 3　著効</label>
+ </div>
+ <div class="note">壊死後に再増殖したと考えられる場合には-Rを付記する　ex. Grade 3a-R<br>日本規約では再増殖画像（＋）と記載する</div>
+</div>
+
+</section>
+
+<!-- ================= INFORMATION ================= -->
+<section class="pane" id="infoPane">
+
+<div class="section">
+ <div class="section-title"><span>病期分類</span><span class="sub">癌取扱い規約</span><span>（未実装）</span></div>
+ <div class="rows">
+  <div class="row"><span>T</span><input readonly data-info-for="T"></div>
+  <div class="row"><span>N</span><input readonly data-info-for="N"></div>
+  <div class="row"><span>M</span><input readonly data-info-for="M"></div>
+  <div class="row"><span>Stage</span><input readonly data-info-for="Stage"></div>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 占拠部位</span><span>癌取扱い規約</span></div>
+ <div id="siteInfo" class="rows"></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 大きさ</span><span>日本規約</span></div>
+ <div id="sizeInfo" class="rows"></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 深達度（mm）</span></div>
+ <div class="note">
+  ! DOIの5mm・10mmがpTXのカットオフ値<br>
+  深達度：浸潤最深部の組織名で示す<br>
+  ※深さDOI(depth of invasion)：仮想粘膜上皮基底層から癌浸潤最深部までの距離<br>
+  厚さ：隆起部も含めた浸潤最深部までの距離（厚さ ＞ or = 深さ）
+ </div>
+ <div id="doiInfo" class="rows"></div>
+</div>
+
+<div class="section"><div class="section-title"><span>◇ 臨床型</span><span>@ 割面より肉眼的に確認する</span></div><div id="clinicalInfo" class="rows"></div></div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 組織型</span><span>癌取扱い規約</span></div>
+ <div id="histologyInfo" class="rows"></div>
+ <div class="note">
+  口腔上皮性異形成（OED）：low-grade dysplasia / high-grade dysplasia<br>
+  2分法－3分法：境界不明瞭な病変の評価に使用
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ グレード分類（病理組織学的分化度分類）</span></div>
+ <div class="note">! 量的に優勢な組織像に従う<br>! 上皮内癌では省略<br>! 治療効果判定でもGrade表記をおこなうため、この項目ではGrade表記はおこなわない<br>! WHO分類ではG1～G3に分類するがUICC＋日本規約ではG1～G4に分類する</div>
+ <div id="gradeClassInfo" class="rows"></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 頬骨浸潤　Bone invasion</span></div>
+ <div class="note">
+  下顎骨浸潤<br>
+  浸潤度：なし<br>
+  骨皮質に限局した浸潤<br>
+  頬骨骨髄貫通部<br>
+  骨髄貫通下顎骨上部<br>
+  下顎骨浸潤最深達部：有歯顎(8-1-1-8)／無歯顎(MPA/APM)<br>
+  下顎骨浸潤様式：圧迫型 expansive type／浸潤型 invasive type<br>
+  下顎骨内進展路：歯槽側進展（＋/－）／下顎管内進展（＋/－）
+ </div>
+ <div id="boneInfo" class="rows"></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 深達度　T</span></div>
+ <div class="rows">
+  <div class="row"><span>pTX</span><span>原発腫瘍の評価不可能</span></div>
+  <div class="row"><span>pT0</span><span>原発腫瘍なし</span></div>
+  <div class="row"><span>pTis</span><span>上皮内癌</span></div>
+  <div class="row"><span>pT1</span><span>最大径2cm以下かつ深達度5mm以下</span></div>
+  <div class="row"><span>pT2</span><span>最大径2cm以下かつ深達度5mmをこえる／最大径2cmをこえるが4cm以下かつ深達度10mm以下</span></div>
+  <div class="row"><span>pT3</span><span>最大径4cmをこえるか深達度10mmをこえる</span></div>
+  <div class="row"><span>pT4a（口唇）</span><span>下顎骨皮質を貫通する、下歯槽神経、口腔底/口底、皮膚（オトガイ以外）に浸潤する</span></div>
+  <div class="row"><span>pT4a（口腔）</span><span>最大径4cmをこえ深達度10mmをこえる／骨・神経・皮膚への浸潤</span></div>
+  <div class="row"><span>pT4b</span><span>咀嚼筋間隙、翼状突起、頭蓋底、内頸動脈を全周性に取り囲む</span></div>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 棘の浸潤様式</span></div>
+ <div class="rows">
+  <div class="row"><span>YK-1</span><span>INFa　膨性発育</span></div>
+  <div class="row"><span>YK-2</span><span></span></div>
+  <div class="row"><span>YK-3</span><span>INFb　中間</span></div>
+  <div class="row"><span>YK-4C</span><span>INFc　浸潤性増殖で周囲との境界は不明瞭</span></div>
+  <div class="row"><span>YK-4D</span><span></span></div>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ WPOI (worst pattern of invasion)</span></div>
+ <div class="rows">
+  <div class="row"><span>POI-1</span><span></span></div>
+  <div class="row"><span>POI-2</span><span></span></div>
+  <div class="row"><span>POI-3</span><span></span></div>
+  <div class="row"><span>POI-4</span><span></span></div>
+  <div class="row"><span>WPOI-5</span><span>浸潤先端部から1mm以上離れて腫瘍細胞が存在する</span></div>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ pHM × 0 1</span></div>
+ <div class="rows"><div class="row"><span>pHMX</span><span>不明な場合は評価困難</span></div><div class="row"><span>pHM0</span><span></span></div><div class="row"><span>pHM1</span><span></span></div></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ pVM × 0 1</span></div>
+ <div class="rows"><div class="row"><span>pVMX</span><span></span></div><div class="row"><span>pVM0</span><span></span></div><div class="row"><span>pVM1</span><span></span></div></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 腫瘍の遺残　pR</span></div>
+ <div class="rows"><div class="row"><span>pRX</span><span></span></div><div class="row"><span>pR0</span><span>遺残腫瘍なし</span></div><div class="row"><span>pR1</span><span>顕微鏡的遺残腫瘍有り</span></div><div class="row"><span>pR2</span><span>肉眼的遺残腫瘍有り</span></div></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ リンパ管浸潤　Ly 1y 0 1a 1b 1c</span></div>
+ <div class="rows"><div class="row"><span>LyX</span><span></span></div><div class="row"><span>Ly0</span><span></span></div><div class="row"><span>Ly1a（Ly1）</span><span>軽度</span></div><div class="row"><span>Ly1b</span><span>中等度</span></div><div class="row"><span>Ly1c（Ly2）</span><span>高度</span></div></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 静脈侵襲　V、0、1a、1b、1c</span></div>
+ <div class="note">Victoria blue HE、Elastica-van Gieson、CD31、CD34推奨</div>
+ <div class="rows"><div class="row"><span>VX</span><span></span></div><div class="row"><span>V0</span><span></span></div><div class="row"><span>V1a（v1）</span><span>軽度</span></div><div class="row"><span>V1b</span><span>中等度</span></div><div class="row"><span>V1c（v2）</span><span>高度</span></div><div class="row"><span>V2</span><span>内腔的</span></div></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 神経浸潤　neu → Pn</span></div>
+ <div class="rows"><div class="row"><span>PnX</span><span>UICC/TNM第8版</span></div><div class="row"><span>Pn0</span><span>Pn0</span></div><div class="row"><span>Pn1a</span><span>Pn1a（neu1）：侵襲軽度</span></div><div class="row"><span>Pn1b</span><span>Pn1b：中等度</span></div><div class="row"><span>Pn1c</span><span>Pn1c（neu2）：侵襲高度</span></div></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ リンパ節節外浸潤</span></div>
+ <div class="rows"><div class="row"><span>ENE(-)</span><span></span></div><div class="row"><span>ENE(+)</span><span></span></div></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 遠隔転移　pM × 0 1　pM1(LYM)</span></div>
+ <div class="note">
+  * LYMの評価はリンパ節番号入力により自動判定されます。<br>
+  ! UICC/TNM第8版では、pMXおよびpM0は不適切として使用しない（記載しない）ことになっている<br>
+  * LYMリンパ節　SKI皮膚　PLU肺　MAR骨髄　OSS骨　PLE胸膜　BRA脳　ADR副腎　HEP肝　MEN髄膜　OVA卵巣
+ </div>
+ <div class="rows"><div class="row"><span>pM1a</span><span>対側肺内への副腫瘍結節、胸膜または心膜の結節、悪性胸水、VA期</span></div><div class="row"><span>pM1b</span><span>肺以外への臓器への単発遠隔転移あるいはVA期</span></div><div class="row"><span>pM1c</span><span>肺以外の一臓器、または他臓器への多発遠隔転移あるいはVB期</span></div></div>
+</div>
+
+<div class="section">
+ <div class="section-title"><span>◇ 治療効果判定基準</span><span>記載推奨グレード A</span></div>
+ <div class="rows">
+  <div class="row"><span>Grade 0</span><span>無効</span></div>
+  <div class="row"><span>Grade 1</span><span>やや有効</span></div>
+  <div class="row"><span>Grade 1a</span><span>ごく軽度の効果</span></div>
+  <div class="row"><span>Grade 1b</span><span>軽度の効果</span></div>
+  <div class="row"><span>Grade 2</span><span>かなり有効</span></div>
+  <div class="row"><span>Grade 3</span><span>著効</span></div>
+ </div>
+ <div class="note">壊死後に再増殖したと考えられる場合には-Rを付記する　ex. Grade 3a-R</div>
+</div>
+
+</section>
+
+<!-- ================= REPORT / FINDING ================= -->
+<section class="report-pane">
+ <div class="report-box diag">
+  <div class="box-title"><span>診断</span><span>癌取扱い規約</span></div>
+  <div class="box-body"><textarea id="diagnosis"></textarea><div class="actions"><button class="copy" data-copy="diagnosis">診断のコピー</button></div></div>
+ </div>
+
+ <div class="report-box find">
+  <div class="box-title"><span>所見</span><span>癌取扱い規約（口腔癌取扱い規約　第2版）</span></div>
+  <div class="box-body"><textarea id="finding"></textarea><div class="actions"><button class="copy" data-copy="finding">所見のコピー</button></div></div>
+ </div>
+
+ <div class="report-box rep">
+  <div class="box-title"><span>レポート</span><span>選択・入力内容を反映</span></div>
+  <div class="box-body"><textarea id="report"></textarea><div class="actions"><button class="copy" data-copy="report">レポートのコピー</button></div></div>
+ </div>
+</section>
+
+</div>
+</main>
+</div>
+
+<script>
+const infoMap={
+ site:{
+  "口唇":"lip","頬粘膜":"buccal mucosa","上歯槽と歯肉（上歯肉/上顎歯肉）":"maxillary gingival",
+  "下歯槽と歯肉（下歯肉/下顎歯肉）":"mandibular gingival","硬口蓋":"hard palate","舌":"Tongue","口腔底/口底":"floor of mouth"
+ },
+ histology:{
+  "低異型度（軽度）口腔上皮異形成（OED）":"Oral epithelial dysplasia (OED), low-grade dysplasia, mild dysplasia",
+  "低異型度（中等度）口腔上皮異形成（OED）":"Oral epithelial dysplasia (OED), low-grade dysplasia, moderate dysplasia",
+  "高異型度（中等度）口腔上皮異形成（OED）":"Oral epithelial dysplasia (OED), high-grade dysplasia, moderate dysplasia",
+  "高異型度（高度）口腔上皮異形成（OED）":"Oral epithelial dysplasia (OED), high-grade dysplasia, severe dysplasia",
+  "上皮内癌":"Carcinoma in situ","扁平上皮癌":"Squamous cell carcinoma",
+  "類基底扁平上皮癌":"basaloid squamous cell carcinoma","紡錘細胞扁平上皮癌":"spindle cell carcinoma",
+  "腺扁平上皮癌":"adenosquamous carcinoma","リンパ上皮癌":"Lymphoepithelial carcinoma",
+  "乳頭状扁平上皮癌":"papillary squamous cell carcinoma","無形成性扁平上皮癌":"Acantholytic squamous cell carcinoma",
+  "腺癌":"Adenocarcinoma","粘表皮癌":"Mucoepidermoid carcinoma","腺様嚢胞癌":"Adenoid cystic carcinoma",
+  "多形腺腫癌":"Polymorphous adenocarcinoma","明細胞癌":"Clear cell carcinoma","基底細胞腺癌":"Basal cell adenocarcinoma",
+  "多形腺腫由来癌":"Carcinoma ex pleomorphic adenoma","エナメル上皮癌":"Ameloblastic carcinoma",
+  "原発性骨内癌、NOS":"Primary intraosseous carcinoma, NOS"
+ }
+};
+
+function val(name){
+ const e=document.querySelector('input[name="'+name+'"]:checked');
+ return e && e.value!=="NONE" ? e.value : "";
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function inputValue(key){
+ const e=document.querySelector('[data-key="'+CSS.escape(key)+'"]');
+ return e?e.value:"";
+}
+function checked(key){
+ const e=document.querySelector('[data-key="'+CSS.escape(key)+'"]');
+ return !!e?.checked;
+}
+function renderRows(id,rows){
+ const el=document.getElementById(id);
+ el.innerHTML=rows.length?rows.map(([a,b])=>`<div class="row"><span>${esc(a)}</span><span class="en">${esc(b||"")}</span></div>`).join(""):'<div class="info-empty">選択なし</div>';
+}
+function update(){
+ const simple=["T","N","M","Stage"];
+ simple.forEach(k=>{const e=document.querySelector('[data-info-for="'+k+'"]');if(e)e.value=inputValue(k)});
+
+ const site=val("site");
+ renderRows("siteInfo",site?[[site,infoMap.site[site]||""]]:[]);
+ const size=[];
+ ["長径","短径","厚さ","近遠心径","頬舌径"].forEach(k=>{let v=inputValue(k);if(v)size.push([k,v+" mm"])});
+ renderRows("sizeInfo",size);
+ const doi=[];
+ if(inputValue("DOI"))doi.push(["深さDOI",inputValue("DOI")+" mm"]);
+ if(inputValue("厚さ_深達度"))doi.push(["厚さ",inputValue("厚さ_深達度")+" mm"]);
+ renderRows("doiInfo",doi);
+
+ const groups=[
+  ["clinical","臨床型","clinicalInfo",{}],
+  ["histology","組織型","histologyInfo",infoMap.histology],
+  ["gradeClass","組織学的グレード","gradeClassInfo",{}],
+  ["bone","頬骨浸潤","boneInfo",{}]
+ ];
+ groups.forEach(([name,label,id,map])=>{const v=val(name);renderRows(id,v?[[v,map[v]||""]]:[])});
+
+ const lines=[];
+ const add=(label,key,unit="")=>{const v=inputValue(key);if(v)lines.push(label+": "+v+unit)};
+ add("T","T");add("N","N");add("M","M");add("Stage","Stage");
+ if(site)lines.push("占拠部位: "+site+(infoMap.site[site]?" ("+infoMap.site[site]+")":""));
+ ["長径","短径","厚さ","近遠心径","頬舌径"].forEach(k=>add(k,k," mm"));
+ add("DOI","DOI"," mm");add("深達度時厚さ","厚さ_深達度"," mm");
+ [["臨床型","clinical"],["組織型","histology"],["グレード","gradeClass"],["頬骨浸潤","bone"],["深達度","pt"],["棘の浸潤様式","YK"],["WPOI","WPOI"],["水平断端","pHM"],["垂直断端","pVM"],["腫瘍の遺残","residual"],["リンパ管浸潤","ly"],["静脈侵襲","v"],["神経周囲浸潤","pn"],["リンパ節節外浸潤","ENE"],["遠隔転移","pM"],["治療効果判定","treatmentGrade"]].forEach(([l,n])=>{const v=val(n);if(v)lines.push(l+": "+v)});
+ const markers=["D2-40","Elastica-van Gieson","Victoria blue HE","CD34","CD31","SKI","PLU","MAR","OSS","PLE","BRA","ADR","HEP","MEN","OVA","OTH","PER"].filter(checked);
+ if(markers.length)lines.push("追加項目: "+markers.join(", "));
+
+ const generated=lines.join("\n");
+ const finding=document.getElementById("finding");
+ const report=document.getElementById("report");
+ finding.value=generated;
+ report.value=generated ? "【病理レポート】\n"+generated : "";
+}
+document.addEventListener("input",e=>{
+ if(e.target.matches('input[type="text"],input[type="number"]'))update();
+});
+document.addEventListener("change",e=>{
+ if(e.target.matches('input[type="radio"],input[type="checkbox"],input[type="text"],input[type="number"]'))update();
+});
+document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",async()=>{
+ const e=document.getElementById(b.dataset.copy);
+ try{await navigator.clipboard.writeText(e.value);b.textContent="コピーしました";setTimeout(()=>b.textContent=b.dataset.copy==="diagnosis"?"診断のコピー":b.dataset.copy==="finding"?"所見のコピー":"レポートのコピー",900)}catch(_){e.select();document.execCommand("copy")}
+}));
+document.getElementById("clearAll").addEventListener("click",()=>{
+ document.querySelectorAll("input").forEach(e=>{if(e.type==="radio"||e.type==="checkbox")e.checked=false;else e.value=""});
+ document.getElementById("diagnosis").value="";
+ update();
+});
+update();
+</script>
+</body>
+</html>

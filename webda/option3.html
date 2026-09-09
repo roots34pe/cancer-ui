@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>病理診断レポート - Option 3</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Arial,"Yu Gothic",Meiryo,sans-serif;
+  font-size:13px;
+  color:#10212b;
+  background:#fff;
+  min-width:1280px;
+}
+.app{
+  display:grid;
+  grid-template-columns:minmax(820px,1fr) 430px;
+  min-height:100vh;
+}
+
+/* center area */
+.center{
+  padding:8px;
+  background:#fff;
+  overflow:hidden;
+}
+.content-grid{
+  display:grid;
+  grid-template-columns:minmax(390px,1fr) minmax(390px,1fr);
+  gap:8px;
+  align-items:start;
+}
+.column{min-width:0}
+
+/* option-1 blue palette */
+.section{
+  margin-bottom:8px;
+  background:#e4f0f7;
+  border:1px solid #d0e1ea;
+}
+.section-title{
+  background:#4d9dca;
+  color:#fff;
+  font-weight:bold;
+  padding:5px 7px;
+  min-height:25px;
+}
+.sub-title{
+  background:#a9cee4;
+  color:#10212b;
+  font-weight:bold;
+  padding:4px 7px;
+}
+.body{
+  background:#e4f0f7;
+}
+.no-change{
+  min-height:28px;
+  padding:5px 8px;
+  background:#d7e9f3;
+}
+.option-row{
+  display:grid;
+  grid-template-columns:22px minmax(150px,1fr) 22px minmax(100px,1fr) 22px minmax(70px,1fr) 35px 55px;
+  min-height:28px;
+  align-items:center;
+  padding:1px 5px;
+}
+.option-row:nth-child(even){background:#cfe4f0}
+.option-row input[type="text"],
+.option-row input[type="number"]{
+  width:100%;
+  min-width:0;
+  height:23px;
+  border:1px solid #c6d9e3;
+  background:#f8fbfc;
+  padding:2px 5px;
+}
+.unit{padding-left:3px}
+.radio-list label,.check-list label{
+  display:block;
+  padding:4px 7px;
+  min-height:26px;
+}
+.radio-list label:nth-child(even),.check-list label:nth-child(even){
+  background:#cfe4f0;
+}
+.inline-options{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  padding:5px 7px;
+}
+.inline-options label{white-space:nowrap}
+.input-table{
+  width:100%;
+  border-collapse:collapse;
+}
+.input-table th{
+  background:#4d9dca;
+  color:#fff;
+  font-weight:bold;
+  padding:4px 5px;
+  text-align:left;
+}
+.input-table td{
+  padding:3px 5px;
+  background:#e4f0f7;
+  vertical-align:middle;
+}
+.input-table tr:nth-child(even) td{background:#cfe4f0}
+.input-table input[type="text"],
+.input-table input[type="number"]{
+  width:100%;
+  height:23px;
+  border:1px solid #c6d9e3;
+  background:#f8fbfc;
+}
+.info-body{
+  background:#e4f0f7;
+  padding:5px 7px;
+  line-height:1.45;
+  min-height:30px;
+}
+.info-row{
+  display:grid;
+  grid-template-columns:42% 58%;
+  min-height:27px;
+  align-items:center;
+}
+.info-row:nth-child(even){background:#cfe4f0}
+.info-row span:first-child{padding:3px 6px}
+.info-row span:last-child{padding:3px 6px}
+.blank-info{min-height:26px}
+
+/* rightmost finding/report */
+.right{
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+  padding:8px;
+  background:#fff;
+  border-left:1px solid #d4e2e9;
+}
+.panel{
+  margin-bottom:10px;
+  background:#e4f0f7;
+  border:1px solid #d0e1ea;
+}
+.panel-title{
+  background:#4d9dca;
+  color:#fff;
+  font-weight:bold;
+  padding:6px 8px;
+}
+.panel-body{
+  min-height:220px;
+  padding:8px;
+  background:#e4f0f7;
+  white-space:pre-wrap;
+  line-height:1.5;
+}
+.finding .panel-body{min-height:250px}
+.reporting .panel-body{min-height:420px}
+.copy-wrap{
+  text-align:right;
+  background:#e4f0f7;
+  padding:0 8px 8px;
+}
+.copy{
+  border:1px solid #fff;
+  background:#808b92;
+  color:#fff;
+  padding:7px 25px;
+  cursor:pointer;
+}
+.selected{
+  margin-top:10px;
+  background:#e4f0f7;
+}
+.selected .panel-body{min-height:130px}
+
+.topbar{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:8px;
+}
+.topbox{
+  background:#e4f0f7;
+  border:1px solid #d0e1ea;
+}
+.top-title{
+  background:#4d9dca;
+  color:#fff;
+  padding:5px 7px;
+  font-weight:bold;
+}
+.tnm{
+  display:grid;
+  grid-template-columns:30px 1fr 30px 1fr 30px 1fr;
+  gap:4px;
+  align-items:center;
+  padding:6px;
+}
+.tnm input{
+  width:100%;
+  height:23px;
+  border:1px solid #c6d9e3;
+  background:#f8fbfc;
+}
+.stage{
+  height:25px;
+  display:grid;
+  grid-template-columns:35% 15% 50%;
+  text-align:center;
+  align-items:center;
+  background:#a9cee4;
+}
+.stage span:nth-child(2){height:100%;background:#e4f0f7}
+
+@media(max-width:1500px){
+  body{font-size:12px}
+  .app{grid-template-columns:minmax(760px,1fr) 400px}
+  .content-grid{grid-template-columns:minmax(360px,1fr) minmax(360px,1fr)}
+}
+</style>
+
+<style id="final-100-30-30-40-layout">
+/* =========================================================
+   FINAL LAYOUT
+   Viewport = 100%
+   Input = 30%
+   Information = 30%
+   Report/Finding = 40%
+   No gap between the three main areas.
+   Left two areas scroll together.
+   ========================================================= */
+
+*, *::before, *::after {
+  box-sizing:border-box !important;
+}
+
+html, body {
+  width:100vw !important;
+  max-width:100vw !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+body {
+  min-width:0 !important;
+  overflow-x:hidden !important;
+  overflow-y:hidden !important;
+}
+
+/* TOP LEVEL: 60% left + 40% right */
+.app {
+  width:100vw !important;
+  max-width:100vw !important;
+  min-width:0 !important;
+  height:100vh !important;
+  min-height:100vh !important;
+
+  display:grid !important;
+  grid-template-columns:60vw 40vw !important;
+  grid-template-rows:100vh !important;
+
+  gap:0 !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* =========================================================
+   LEFT 60% — ONE SHARED SCROLL AREA
+   ========================================================= */
+.center {
+  grid-column:1 !important;
+  grid-row:1 !important;
+
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+  height:100vh !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+}
+
+/* EXACTLY 30% INPUT + 30% INFORMATION */
+.content-grid {
+  width:60vw !important;
+  min-width:60vw !important;
+  max-width:60vw !important;
+
+  display:grid !important;
+  grid-template-columns:30vw 30vw !important;
+
+  gap:0 !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+
+  align-items:start !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* Both left columns occupy their complete 30%. */
+.content-grid > .column {
+  min-width:0 !important;
+  width:30vw !important;
+  max-width:30vw !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* =========================================================
+   RIGHT 40% — FIXED REPORT/FINDING
+   ========================================================= */
+.right {
+  grid-column:2 !important;
+  grid-row:1 !important;
+
+  width:40vw !important;
+  min-width:40vw !important;
+  max-width:40vw !important;
+  height:100vh !important;
+
+  position:sticky !important;
+  top:0 !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+
+  border-left:0 !important;
+}
+
+/* Keep every right-side panel inside exactly the 40%. */
+.right > .panel {
+  width:40vw !important;
+  min-width:40vw !important;
+  max-width:40vw !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+/* =========================================================
+   REMOVE ALL OUTER LAYOUT GAPS
+   ========================================================= */
+.app,
+.center,
+.content-grid,
+.right {
+  gap:0 !important;
+  column-gap:0 !important;
+  row-gap:0 !important;
+}
+
+/* Preserve the original internal panel styling. */
+.section,
+.panel {
+  box-sizing:border-box !important;
+}
+
+/* Desktop: keep the exact viewport ratio even if old media
+   queries try to change the original layout. */
+@media (min-width:1px) {
+  .app {
+    width:100vw !important;
+    grid-template-columns:60vw 40vw !important;
+  }
+
+  .center {
+    width:60vw !important;
+    max-width:60vw !important;
+  }
+
+  .content-grid {
+    width:60vw !important;
+    grid-template-columns:30vw 30vw !important;
+  }
+
+  .content-grid > .column {
+    width:30vw !important;
+    max-width:30vw !important;
+  }
+
+  .right {
+    width:40vw !important;
+    max-width:40vw !important;
+  }
+
+  .right > .panel {
+    width:40vw !important;
+    max-width:40vw !important;
+  }
+}
+</style>
+
+</head>
+<body>
+
+<div class="app">
+<main class="center">
+
+  <div class="content-grid">
+
+    <!-- LEFT INPUT COLUMN -->
+    <div class="column">
+
+      <section class="section" id="gallbladder">
+        <div class="section-title">臓器別　　所見入力　　 サイズ入力　　 大きさ（最大径）　　 個数</div>
+
+        <div class="sub-title">胆嚢</div>
+        <div class="no-change">
+          著変なし　　<label><input type="checkbox" class="nashi" value="胆嚢粘膜上皮に著変なし"> 胆嚢粘膜上皮に著変なし</label>
+        </div>
+
+        <div class="section-title">◇ 胆嚢炎</div>
+        <div class="input-table-wrap">
+          <table class="input-table">
+            <tr><td><input type="checkbox" value="慢性胆嚢炎" data-report="慢性胆嚢炎"></td><td>慢性胆嚢炎</td><td><input type="checkbox" value="慢性胆嚢炎"></td></tr>
+            <tr><td><input type="checkbox" value="胆石症" data-report="胆石症"></td><td>胆石症</td><td><input type="checkbox" value="胆石症"></td></tr>
+          </table>
+        </div>
+
+        <div class="section-title">◇ 胆嚢ポリープ</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="コレステロールポリープ"></td><td>コレステロールポリープ</td><td><input type="checkbox"></td><td><input type="number" placeholder=""></td><td>mm</td><td><input type="number" value="4"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="コレステローシス"></td><td>コレステローシス</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="胆嚢腺腫"></td><td>胆嚢腺腫</td><td><input type="checkbox"></td><td><input type="number" value="4"></td><td>mm</td><td><input type="number" value="4"></td><td>個</td></tr>
+        </table>
+
+        <div class="section-title">◇ 胆嚢腺筋症</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="胆嚢腺筋症"></td><td>胆嚢腺筋症</td><td><input type="checkbox"></td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="appendix">
+        <div class="sub-title">虫垂</div>
+        <div class="no-change">
+          著変なし　　<label><input type="checkbox" class="nashi" value="虫垂粘膜上皮に著変なし"> 虫垂粘膜上皮に著変なし</label>
+        </div>
+        <div class="section-title">◇ 虫垂炎</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="慢性虫垂炎"></td><td>慢性虫垂炎</td><td><input type="checkbox"></td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="colon">
+        <div class="sub-title">結腸</div>
+        <div class="no-change">
+          著変なし　　<label><input type="checkbox" class="nashi" value="結腸粘膜上皮に著変なし"> 結腸粘膜上皮に著変なし</label>
+        </div>
+
+        <div class="section-title">◇ 結腸ポリープ</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="上行結腸ポリープ"></td><td>上行結腸ポリープ</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="横行結腸ポリープ"></td><td>横行結腸ポリープ</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="下行結腸ポリープ"></td><td>下行結腸ポリープ</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="S状結腸ポリープ"></td><td>S状結腸ポリープ</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+        </table>
+
+        <div class="section-title">◇ 病変組織像</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="高異型度管状腺腫"></td><td>高異型度管状腺腫</td><td><input type="checkbox"></td></tr>
+          <tr><td><input type="checkbox" value="低異型度管状腺腫"></td><td>低異型度管状腺腫</td><td><input type="checkbox"></td></tr>
+          <tr><td><input type="checkbox" value="過形成性ポリープ"></td><td>過形成性ポリープ</td><td><input type="checkbox"></td></tr>
+          <tr><td><input type="checkbox" value="SSA/P"></td><td>SSA/P</td><td><input type="checkbox"></td></tr>
+        </table>
+
+        <div class="section-title">◇ 癌巣</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="上行結腸癌巣"></td><td>上行結腸癌巣</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="横行結腸癌巣"></td><td>横行結腸癌巣</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="下行結腸癌巣"></td><td>下行結腸癌巣</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="S状結腸癌巣"></td><td>S状結腸癌巣</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+        </table>
+
+        <div class="section-title">◇ 結腸重</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="結腸重"></td><td>結腸重</td><td><input type="checkbox"></td><td><input type="number"></td><td>cm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="腹腔ネズミ"></td><td>腹腔ネズミ</td><td><input type="checkbox"></td><td><input type="number"></td><td>cm</td><td><input type="number"></td><td>個</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="uterus">
+        <div class="sub-title">子宮体部</div>
+        <div class="no-change">
+          著変なし　　<label><input type="checkbox" class="nashi" value="子宮体部内膜腺に著変なし"> 子宮体部内膜腺に著変なし</label><br>
+          <label><input type="checkbox" value="内膜萎縮"> 内膜萎縮</label>
+        </div>
+
+        <div class="section-title">◇ 子宮筋腫</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="子宮筋腫"></td><td>子宮筋腫</td><td><input type="checkbox"></td><td><input type="number"></td><td>cm</td><td><input type="number"></td><td>個</td></tr>
+        </table>
+
+        <div class="section-title">◇ 腺筋症</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="腺筋腫症"></td><td>腺筋腫症</td><td><input type="checkbox"></td></tr>
+          <tr><td><input type="checkbox" value="子宮内膜症"></td><td>子宮内膜症</td><td><input type="checkbox"></td></tr>
+          <tr><td><input type="checkbox" value="外性子宮内膜症"></td><td>外性子宮内膜症</td><td><input type="checkbox"></td></tr>
+        </table>
+
+        <div class="section-title">◇ 子宮内膜ポリープ</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="子宮内膜ポリープ"></td><td>子宮内膜ポリープ</td><td><input type="checkbox"></td><td><input type="number" value="5"></td><td>cm</td><td><input type="number" value="5"></td><td>個</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="cervix">
+        <div class="sub-title">子宮頸部</div>
+        <div class="no-change">
+          著変なし　　<label><input type="checkbox" class="nashi" value="子宮頸部に著変なし"> 子宮頸部に著変なし</label>
+        </div>
+
+        <div class="section-title">◇ 子宮頸管ポリープ</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="子宮頸管ポリープ"></td><td>子宮頸管ポリープ</td><td><input type="checkbox"></td><td><input type="number"></td><td>cm</td><td><input type="number"></td><td>個</td></tr>
+        </table>
+
+        <div class="section-title">◇ 嚢胞性病変</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="ナボット嚢胞"></td><td>ナボット嚢胞</td><td><input type="checkbox"></td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="left-ovary">
+        <div class="sub-title">左卵巣</div>
+        <div class="no-change">著変なし</div>
+        <div class="check-list">
+          <label><input type="checkbox" value="左付属器に著変なし"> 左付属器に著変なし</label>
+          <label><input type="checkbox" value="左卵管に著変なし"> 左卵管に著変なし</label>
+          <label><input type="checkbox" value="左卵巣に著変なし"> 左卵巣に著変なし</label>
+        </div>
+
+        <div class="section-title">◇ 嚢胞性病変</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="傍卵管嚢胞"></td><td>傍卵管嚢胞</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="傍卵巣嚢胞"></td><td>傍卵巣嚢胞</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="子宮内膜症性嚢胞"></td><td>子宮内膜症性嚢胞</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+        </table>
+      </section>
+
+      <section class="section" id="right-ovary">
+        <div class="sub-title">右卵巣</div>
+        <div class="no-change">著変なし</div>
+        <div class="check-list">
+          <label><input type="checkbox" value="右付属器に著変なし"> 右付属器に著変なし</label>
+          <label><input type="checkbox" value="右卵管に著変なし"> 右卵管に著変なし</label>
+          <label><input type="checkbox" value="右卵巣に著変なし"> 右卵巣に著変なし</label>
+        </div>
+
+        <div class="section-title">◇ 嚢胞性病変</div>
+        <table class="input-table">
+          <tr><td><input type="checkbox" value="傍卵管嚢胞"></td><td>傍卵管嚢胞</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="傍卵巣嚢胞"></td><td>傍卵巣嚢胞</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+          <tr><td><input type="checkbox" value="子宮内膜症性嚢胞"></td><td>子宮内膜症性嚢胞</td><td><input type="checkbox"></td><td><input type="number"></td><td>mm</td><td><input type="number"></td><td>個</td></tr>
+        </table>
+      </section>
+
+    </div>
+
+    <!-- INFORMATION COLUMN -->
+    <div class="column">
+
+      <section class="section">
+        <div class="section-title">臓器別</div>
+        <div class="sub-title">胆嚢</div>
+
+        <div class="section-title">◇ 胆嚢炎</div>
+        <div class="info-row"><span>慢性胆嚢炎</span><span>Chronic cholecystitis</span></div>
+        <div class="info-row"><span>胆石症</span><span>Cholelithiasis</span></div>
+
+        <div class="section-title">◇ 胆嚢ポリープ</div>
+        <div class="info-row"><span>コレステロールポリープ</span><span>Cholesterol polyp</span></div>
+        <div class="info-row"><span>コレステローシス</span><span>Cholesterolosis</span></div>
+        <div class="info-row"><span>胆嚢腺腫</span><span>Gallbladder polyp, adenoma</span></div>
+
+        <div class="section-title">◇ 胆嚢腺筋症</div>
+        <div class="info-row"><span>胆嚢腺筋症</span><span>Gallbladder adenomyomatosis</span></div>
+      </section>
+
+      <section class="section">
+        <div class="sub-title">虫垂</div>
+        <div class="blank-info"></div>
+        <div class="section-title">◇ 虫垂炎</div>
+        <div class="info-row"><span>慢性虫垂炎</span><span>Chronic appendicitis</span></div>
+      </section>
+
+      <section class="section">
+        <div class="sub-title">結腸</div>
+        <div class="blank-info"></div>
+        <div class="section-title">◇ 結腸ポリープ</div>
+        <div class="info-row"><span>上行結腸ポリープ</span><span></span></div>
+        <div class="info-row"><span>横行結腸ポリープ</span><span></span></div>
+        <div class="info-row"><span>下行結腸ポリープ</span><span></span></div>
+        <div class="info-row"><span>S状結腸ポリープ</span><span></span></div>
+
+        <div class="section-title">◇ 病変組織像</div>
+        <div class="info-row"><span>高異型度管状腺腫</span><span>Tubular adenoma(s), high grade</span></div>
+        <div class="info-row"><span>低異型度管状腺腫</span><span>Tubular adenoma(s), low grade</span></div>
+        <div class="info-row"><span>過形成性ポリープ</span><span>Hyperplastic polyp</span></div>
+        <div class="info-row"><span>広基性鋸歯状腺腫 SSA/P</span><span>Sessile serrated adenoma/polyp (SSA/P)</span></div>
+
+        <div class="section-title">◇ 癌巣</div>
+        <div class="info-row"><span>上行結腸癌巣</span><span></span></div>
+        <div class="info-row"><span>横行結腸癌巣</span><span></span></div>
+        <div class="info-row"><span>下行結腸癌巣</span><span></span></div>
+        <div class="info-row"><span>S状結腸癌巣</span><span></span></div>
+
+        <div class="section-title">◇ 結腸重</div>
+        <div class="info-row"><span>結腸重</span><span></span></div>
+        <div class="info-row"><span>腹腔ネズミ</span><span></span></div>
+      </section>
+
+      <section class="section">
+        <div class="sub-title">子宮体部</div>
+        <div class="blank-info"></div>
+
+        <div class="section-title">◇ 子宮筋腫</div>
+        <div class="info-row"><span>子宮筋腫</span><span>Leiomyoma of the uterus</span></div>
+
+        <div class="section-title">◇ 腺筋症</div>
+        <div class="info-row"><span>腺筋腫症</span><span>Adenomyosis of the uterus</span></div>
+        <div class="info-row"><span>子宮内膜症</span><span>Endometriosis of the uterus</span></div>
+        <div class="info-row"><span>外性子宮内膜症</span><span>Endometriosis externa</span></div>
+
+        <div class="section-title">◇ 子宮内膜ポリープ</div>
+        <div class="info-row"><span>子宮内膜ポリープ</span><span>Endometrial polyp</span></div>
+      </section>
+
+      <section class="section">
+        <div class="sub-title">子宮頸部</div>
+        <div class="blank-info"></div>
+
+        <div class="section-title">◇ 子宮頸管ポリープ</div>
+        <div class="info-row"><span>子宮頸管ポリープ</span><span>Cervical polyp</span></div>
+
+        <div class="section-title">◇ 嚢胞性病変</div>
+        <div class="info-row"><span>ナボット嚢胞</span><span>Nabothian cysts</span></div>
+      </section>
+
+      <section class="section">
+        <div class="sub-title">左卵巣</div>
+        <div class="blank-info" style="min-height:90px"></div>
+
+        <div class="section-title">◇ 嚢胞性病変</div>
+        <div class="info-row"><span>傍卵管嚢胞</span><span>Paratubal cyst</span></div>
+        <div class="info-row"><span>傍卵巣嚢胞</span><span>Paraovarian cyst</span></div>
+        <div class="info-row"><span>子宮内膜症性嚢胞</span><span>Rt-ovarian endometriotic cyst</span></div>
+      </section>
+
+      <section class="section">
+        <div class="sub-title">右卵巣</div>
+        <div class="blank-info" style="min-height:90px"></div>
+
+        <div class="section-title">◇ 嚢胞性病変</div>
+        <div class="info-row"><span>傍卵管嚢胞</span><span>Paratubal cyst</span></div>
+        <div class="info-row"><span>傍卵巣嚢胞</span><span>Paraovarian cyst</span></div>
+        <div class="info-row"><span>子宮内膜症性嚢胞</span><span>Rt-ovarian endometriotic cyst</span></div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<!-- RIGHTMOST FINDING / REPORTING -->
+<aside class="right">
+
+  <section class="panel finding">
+    <div class="panel-title">診断 / Finding</div>
+    <div class="panel-body" id="finding">入力・選択した内容がここに反映されます。</div>
+    <div class="copy-wrap"><button class="copy" onclick="copyText('finding')">診断をコピー</button></div>
+  </section>
+
+  <section class="panel reporting">
+    <div class="panel-title">所見 / Reporting</div>
+    <div class="panel-body" id="report">入力・選択した内容がここに反映されます。</div>
+    <div class="copy-wrap"><button class="copy" onclick="copyText('report')">所見をコピー</button></div>
+  </section>
+
+  <section class="panel selected">
+    <div class="panel-title">選択内容</div>
+    <div class="panel-body" id="selected">選択内容がここに表示されます。</div>
+  </section>
+
+</aside>
+</div>
+
+<script>
+function getValues(){
+  const values=[];
+
+  document.querySelectorAll('input[type="checkbox"]:checked').forEach(el=>{
+    if(el.value) values.push(el.value);
+  });
+
+  document.querySelectorAll('input[type="radio"]:checked').forEach(el=>{
+    if(el.value) values.push(el.value);
+  });
+
+  document.querySelectorAll('input[type="text"], input[type="number"]').forEach(el=>{
+    if(el.value.trim()){
+      const row=el.closest('tr');
+      const label=row ? row.querySelector('td:nth-child(2)') : null;
+      const text=label ? label.textContent.trim() : '';
+      const unit=(el.type==='number' && el.closest('tr')) ? '' : '';
+      values.push(text ? text+'：'+el.value+unit : el.value);
+    }
+  });
+
+  return [...new Set(values)];
+}
+
+function updateOutput(){
+  const values=getValues();
+  const text=values.length ? values.join('\n') : '入力・選択した内容がここに反映されます。';
+
+  document.getElementById('finding').textContent=text;
+  document.getElementById('report').textContent=text;
+  document.getElementById('selected').textContent=text;
+}
+
+document.addEventListener('change',updateOutput);
+document.addEventListener('input',updateOutput);
+
+function copyText(id){
+  const text=document.getElementById(id).textContent;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text);
+  }
+}
+
+function jump(id){
+  const el=document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+updateOutput();
+</script>
+</body>
+</html>

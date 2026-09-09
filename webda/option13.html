@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option 13</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:Arial,"Yu Gothic",Meiryo,sans-serif;font-size:12px;background:#fff;color:#111}
+body{overflow-x:auto}
+.app{display:grid;grid-template-columns:minmax(850px,1fr) minmax(560px,1.15fr);gap:4px;padding:4px;align-items:start}
+
+/* Navigation */
+.nav{position:sticky;top:4px;height:calc(100vh - 8px);background:#5f91a7;color:#fff;border:1px solid #4f8197;overflow:auto}
+.nav-title{font-weight:bold;font-size:15px;padding:8px 6px;background:#4e7f95}
+.nav button{display:block;width:100%;border:0;border-bottom:1px solid rgba(255,255,255,.35);background:#6a9caf;color:#fff;text-align:left;padding:7px 5px;cursor:pointer;font-size:11px}
+.nav button:hover,.nav button.active{background:#3f7188}
+.nav small{display:block;padding:6px;color:#eaf4f7}
+
+/* Main input/information area */
+.main{display:grid;grid-template-columns:minmax(410px,1fr) minmax(410px,1fr);gap:8px;align-items:start}
+.column{min-width:0}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.full{grid-column:1/-1}
+
+.section{border:1px solid #d6d6d6;margin-bottom:8px;background:#fde4d1}
+.head{height:24px;background:#f4770b;color:#111;font-weight:bold;padding:5px 7px;white-space:nowrap;overflow:hidden}
+.subhead{background:#f6a36b;padding:5px 7px;font-weight:bold}
+.body{padding:7px}
+.inputrow{display:flex;align-items:center;gap:7px;margin:5px 0}
+input[type=text],input[type=number]{height:21px;border:1px solid #aaa;background:#fff;padding:2px 5px}
+.w80{width:80px}.w110{width:110px}.w140{width:140px}.w180{width:180px}
+label{cursor:pointer}
+.radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 40px}
+.radio-list{display:flex;flex-direction:column;gap:6px}
+.option-row{min-height:24px;display:flex;align-items:center;gap:5px}
+.nashi{margin-left:auto;min-width:130px;text-align:center;padding:6px 12px;background:#f6a36b}
+.nashi input{margin-right:5px}
+.note{font-size:11px;margin-top:7px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.checkrow{display:flex;align-items:center;gap:5px;margin-top:5px}
+.copybtn{float:right;background:#888;color:#fff;border:0;padding:7px 25px;cursor:pointer}
+.clearbtn{background:#888;color:#fff;border:0;padding:7px 25px;cursor:pointer}
+.reportline{min-height:23px;border-bottom:1px solid #eee;padding:4px 7px}
+.table{width:100%;border-collapse:collapse;margin-top:4px}
+.table td,.table th{border:1px solid #bbb;padding:4px;text-align:left}
+.table th{background:#aaa}
+
+/* Information side */
+.info .body{background:#fde4d1;min-height:55px;line-height:1.55}
+.info .head{background:#f4770b}
+.info .note-list{padding-left:18px;margin:0}
+.info .note-list li{margin:5px 0}
+
+/* Right report/finding */
+.right{position:sticky;top:4px;height:calc(100vh - 8px);display:grid;grid-template-rows:minmax(0,1fr) minmax(220px,.55fr);gap:8px;min-width:0}
+.rightbox{border:1px solid #8eaebc;display:flex;flex-direction:column;min-height:0}
+.righthead{height:26px;background:#5f91a7;color:#fff;font-weight:bold;padding:6px}
+.reportcontent,.findingcontent{flex:1;background:#fff;padding:8px;overflow:visible;white-space:pre-wrap}
+.rightfoot{height:25px;background:#e4eef2;text-align:right;padding:4px}
+.rightfoot button{background:#888;color:#fff;border:0;padding:4px 12px}
+
+/* Larger source-like blocks */
+.big-list{max-height:none}
+.two-col-list{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+.two-col-list div{padding:3px 0}
+.indent{padding-left:25px}
+.orange-note{background:#f6a36b;padding:7px}
+@media(max-width:1250px){
+  .app{grid-template-columns:minmax(780px,1fr) 500px}
+  .main{grid-template-columns:1fr}
+  .pair{grid-template-columns:1fr 1fr}
+}
+@media(max-width:1000px){
+  .app{grid-template-columns:1fr}
+  .right{grid-column:2;position:relative;height:600px}
+  .main{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+
+
+<main class="main">
+
+<div class="column">
+
+<section class="section" id="classification">
+ <div class="head">病期分類　UICC/TNM分類第8版　（未実装）</div>
+ <div class="body">
+  <div class="three">
+   <label>T <input id="t" class="w110" type="text"></label>
+   <label>N <input id="n" class="w110" type="text"></label>
+   <label>M <input id="m" class="w110" type="text"></label>
+  </div>
+  <div class="inputrow">Stage <input id="stage" class="w110" type="text"></div>
+ </div>
+</section>
+
+<section class="section" id="site">
+ <div class="head">◇ 占拠部位　　！占拠ではない　　＊ 日本規約第8版</div>
+ <div class="body">
+  <div class="radio-grid">
+   <label class="option-row"><input type="radio" name="site" value="左葉">左葉</label>
+   <label class="option-row"><input type="radio" name="site" value="上">上</label>
+   <label class="option-row"><input type="radio" name="site" value="右葉">右葉</label>
+   <label class="option-row"><input type="radio" name="site" value="中">中</label>
+   <label class="option-row"><input type="radio" name="site" value="峡部">峡部</label>
+   <label class="option-row"><input type="radio" name="site" value="下">下</label>
+   <label class="option-row"><input type="radio" name="site" value="錐体葉">錐体葉</label>
+   <label class="option-row nashi"><input type="radio" name="site" value="選択なし">選択なし</label>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="number">
+ <div class="head">◇ 数　　　＊ 日本規約第8版</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="number" value="単発"> 単発</label>
+   <label><input type="radio" name="number" value="多発 2カ所（甲状腺癌取扱い規約第8版）"> 多発 2カ所（甲状腺癌取扱い規約第8版）</label>
+   <label><input type="radio" name="number" value="多発 3カ所以上"> 多発 3カ所以上</label>
+   <label><input type="radio" name="number" value="不明"> 不明</label>
+   <label class="nashi"><input type="radio" name="number" value="選択なし">選択なし</label>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="size">
+ <div class="head">◇ 腫瘍の大きさ　　！規約はcmで記載　NCDはmmで記載　　＊ 日本規約第8版</div>
+ <div class="body">
+  <div class="three">
+   <label>長径 <input id="long" class="w140" type="text"> mm</label>
+   <label>直交する短径 <input id="short" class="w140" type="text"> mm</label>
+   <label>厚さ <input id="thick" class="w140" type="text"> mm</label>
+  </div>
+  <label class="checkrow"><input id="thickCheck" type="checkbox"> 厚さを記入する</label>
+  <div class="note">！微小癌：癌巣の最大径が1cm以下のもの</div>
+ </div>
+</section>
+
+<section class="section" id="depth">
+ <div class="head">◇ 深達度　　　　　　　　　　＊ 日本規約第8版</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="depth" value="pTX"> pTX　　pTX, pEX</label>
+   <label><input type="radio" name="depth" value="pT0"> pT0　　pT0, pEX0</label>
+   <label><input type="radio" name="depth" value="pT1a"> pT1a　 pT1a, pEX0</label>
+   <label><input type="radio" name="depth" value="pT1b"> pT1b　 pT1b, pEX0</label>
+   <label><input type="radio" name="depth" value="pT2"> pT2　　pT2, pEX0</label>
+   <label><input type="radio" name="depth" value="pT3a"> pT3a　 pT3a, pEX0</label>
+   <label><input type="radio" name="depth" value="pT3b"> pT3b　 pT3b, pEX1</label>
+   <label><input type="radio" name="depth" value="pT4a"> pT4a　 pT4a, pEX2</label>
+   <label><input type="radio" name="depth" value="pT4b"> pT4b　 pT4b, pEX2</label>
+   <label class="nashi"><input type="radio" name="depth" value="選択なし">選択なし</label>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="capsule">
+ <div class="head">◇ 甲状腺外進展　　　　　　　＊ 日本規約第8版</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="capsule" value="不明"> 不明</label>
+   <label><input type="radio" name="capsule" value="なし"> なし</label>
+   <label><input type="radio" name="capsule" value="あり"> あり</label>
+   <label><input type="radio" name="capsule" value="甲状腺周囲脂肪組織"> 甲状腺周囲脂肪組織　　(pT1a-pT3a), pEx0</label>
+   <label><input type="radio" name="capsule" value="前頸部筋"> 前頸部筋　　　　　pT3b, pEx1</label>
+   <label><input type="radio" name="capsule" value="皮下"> 皮下　　　　　　　pT4a, pEx2</label>
+   <label><input type="radio" name="capsule" value="咽頭"> 咽頭　　　　　　　pT4a, pEx2</label>
+   <label><input type="radio" name="capsule" value="気管"> 気管　　　　　　　pT4a, pEx2</label>
+   <label><input type="radio" name="capsule" value="食道"> 食道　　　　　　　pT4a, pEx2</label>
+   <label><input type="radio" name="capsule" value="反回神経"> 反回神経　　　　　pT4a, pEx2</label>
+   <label><input type="radio" name="capsule" value="椎骨前筋群"> 椎骨前筋群　　　　pT4b, pEX2</label>
+   <label><input type="radio" name="capsule" value="大血管"> 大血管　　　　　　pT4b, pEX2</label>
+   <label><input type="radio" name="capsule" value="頸動脈"> 頸動脈　　　　　　pT4b, pEX2</label>
+   <label class="nashi"><input type="radio" name="capsule" value="選択なし">選択なし</label>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="vascular">
+ <div class="head">◇ 腺外浸潤　　　　！上記深達度により自動入力されたもの記載不要</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="vascular" value="pEx0"> pEx0</label>
+   <label><input type="radio" name="vascular" value="pEx1"> pEx1：胸骨甲状筋もしくは周囲脂肪組織に浸潤するが、それを越えない</label>
+   <label><input type="radio" name="vascular" value="pEx2"> pEx2：胸骨甲状筋や周囲脂肪組織を越えて浸潤する</label>
+   <label class="nashi"><input type="radio" name="vascular" value="選択なし">選択なし</label>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="nodes">
+ <div class="head">◇ リンパ管侵襲　　！ 日本規約記載無し　　＊ 領域横断的がん取扱い規約第１版</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="nodes" value="LyX"> LyX</label>
+   <label><input type="radio" name="nodes" value="Ly0"> Ly0</label>
+   <label><input type="radio" name="nodes" value="Ly1a"> Ly1a　　軽度</label>
+   <label><input type="radio" name="nodes" value="Ly1b"> Ly1b　　中等度</label>
+   <label><input type="radio" name="nodes" value="Ly1c"> Ly1c　　高度</label>
+   <label class="nashi"><input type="radio" name="nodes" value="選択なし">選択なし</label>
+  </div>
+  <div class="orange-note">
+   免疫組織学染色追加　
+   <label><input type="checkbox" name="d240"> D2-40</label>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="nerve">
+ <div class="head">◇ 神経周囲浸潤　　　！ 日本規約記載無し　　＊ 領域横断的がん取扱い規約第１版</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="nerve" value="PnX"> PnX</label>
+   <label><input type="radio" name="nerve" value="Pn0"> Pn0</label>
+   <label><input type="radio" name="nerve" value="Pn1a"> Pn1a　　軽度</label>
+   <label><input type="radio" name="nerve" value="Pn1b"> Pn1b　　中等度</label>
+   <label><input type="radio" name="nerve" value="Pn1c"> Pn1c　　高度</label>
+   <label class="nashi"><input type="radio" name="nerve" value="選択なし">選択なし</label>
+  </div>
+  <div class="orange-note">免疫組織学染色追加</div>
+ </div>
+</section>
+
+<section class="section" id="distant">
+ <div class="head">◇ 遠隔転移</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="distant" value="pMX"> pMX</label>
+   <label><input type="radio" name="distant" value="pM0"> pM0</label>
+   <label><input type="radio" name="distant" value="pM1"> pM1</label>
+   <label class="nashi"><input type="radio" name="distant" value="選択なし">選択なし</label>
+  </div>
+  <div class="orange-note">
+   <label><input type="checkbox" name="SKI"> SKI</label>
+   <label><input type="checkbox" name="PLU"> PLU</label>
+   <label><input type="checkbox" name="MAR"> MAR</label>
+   <label><input type="checkbox" name="OSS"> OSS</label>
+   <label><input type="checkbox" name="PLE"> PLE</label>
+   <label><input type="checkbox" name="BRA"> BRA</label>
+   <label><input type="checkbox" name="ADR"> ADR</label>
+   <label><input type="checkbox" name="HEP"> HEP</label>
+   <label><input type="checkbox" name="OTH"> OTH</label>
+   <label><input type="checkbox" name="PER"> PER</label>
+   <label><input type="checkbox" name="MEN"> MEN</label>
+   <label><input type="checkbox" name="OVA"> OVA</label>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="pleura">
+ <div class="head">◇ 被膜浸潤　　　！乳頭癌と濾胞癌で検索必要　　＊ 日本規約第8版</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="pleura" value="評価困難"> 評価困難</label>
+   <label><input type="radio" name="pleura" value="浸潤なし"> 浸潤なし</label>
+   <label><input type="radio" name="pleura" value="浸潤あり"> 浸潤あり</label>
+   <label class="nashi"><input type="radio" name="pleura" value="選択なし">選択なし</label>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="vessel">
+ <div class="head">◇ 血管浸潤　血管浸潤　　　＊ 日本規約第8版</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="vessel" value="評価困難"> 評価困難</label>
+   <label><input type="radio" name="vessel" value="浸潤なし"> 浸潤なし</label>
+   <label><input type="radio" name="vessel" value="浸潤あり"> 浸潤あり</label>
+   <label class="nashi"><input type="radio" name="vessel" value="選択なし">選択なし</label>
+  </div>
+  <div class="radio-list">
+   <label><input type="radio" name="vesselnum" value="3カ所以下にあり"> 3カ所以下にあり</label>
+   <label><input type="radio" name="vesselnum" value="4カ所以上にあり"> 4カ所以上にあり</label>
+   <label><input type="radio" name="vesselnum" value="不明"> 不明</label>
+   <label class="nashi"><input type="radio" name="vesselnum" value="選択なし">選択なし</label>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="gene">
+ <div class="head">◇ 遺伝情報</div>
+ <div class="body">
+  <div>RET遺伝学的検査</div>
+  <div>両側多発性</div>
+  <div>非腫瘍部甲状腺にC細胞過形成がみられる</div>
+ </div>
+</section>
+
+<section class="section" id="invasion">
+ <div class="head">◇ 腫瘍の浸潤　　　！ 日本規約記載無し　　＊ 領域横断的がん取扱い規約第１版</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="invasion" value="RX"> RX　　評価できない</label>
+   <label><input type="radio" name="invasion" value="R0"> R0　　遺残無し</label>
+   <label><input type="radio" name="invasion" value="R1"> R1　　顕微鏡的</label>
+   <label><input type="radio" name="invasion" value="R2"> R2　　肉眼的</label>
+   <label class="nashi"><input type="radio" name="invasion" value="選択なし">選択なし</label>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="nucleus">
+ <div class="head">◇ 核分裂像</div>
+ <div class="body">
+  <label><input id="mitosisCheck" type="checkbox"> 入力あり</label>
+  <input id="mitosis" class="w110" type="text"> 個/10HPF
+ </div>
+</section>
+
+<section class="section" id="cut">
+ <div class="head">◇ 切除断端</div>
+ <div class="body">
+  <div class="radio-list">
+   <label><input type="radio" name="cut" value="評価困難"> 評価困難</label>
+   <label><input type="radio" name="cut" value="切除断端陰性"> 切除断端陰性</label>
+   <label><input type="radio" name="cut" value="切除断端陽性"> 切除断端陽性</label>
+   <label class="nashi"><input type="radio" name="cut" value="選択なし">選択なし</label>
+  </div>
+ </div>
+</section>
+
+</div>
+
+<div class="column">
+
+<section class="section info">
+ <div class="head">病期分類　UICC/TNM分類第8版</div>
+ <div class="body">UICC/TNM分類第8版　（未実装）</div>
+</section>
+
+<section class="section info">
+ <div class="head">占拠部位</div>
+ <div class="body">占拠部位の情報</div>
+</section>
+
+<section class="section info">
+ <div class="head">数</div>
+ <div class="body">多発・単発に関する情報</div>
+</section>
+
+<section class="section info">
+ <div class="head">腫瘍の大きさ</div>
+ <div class="body">腫瘍の最大径・短径・厚さを記載します。</div>
+</section>
+
+<section class="section info">
+ <div class="head">深達度　pT分類</div>
+ <div class="body">
+  <div>pTX　評価不能</div>
+  <div>pT1a　pT1a, pEx0</div>
+  <div>pT1b　pT1b, pEx0</div>
+  <div>pT2　pT2, pEx0</div>
+  <div>pT3a　pT3a, pEx0</div>
+  <div>pT3b　pT3b, pEx1</div>
+  <div>pT4a　pT4a, pEx2</div>
+  <div>pT4b　pT4b, pEx2</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">甲状腺外進展</div>
+ <div class="body">
+  <div>甲状腺周囲脂肪組織（pT1a-pT3a）, pEx0</div>
+  <div>前頸部筋 pT3b, pEx1</div>
+  <div>皮下・咽頭・気管・食道・反回神経 pT4a, pEx2</div>
+  <div>椎骨前筋群・大血管・頸動脈 pT4b, pEX2</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">腺外浸潤　pEx0 / pEx1 / pEx2</div>
+ <div class="body">
+  <div>pEx0</div>
+  <div>pEx1：胸骨甲状筋もしくは周囲脂肪組織に浸潤するが、それを越えない</div>
+  <div>pEx2：胸骨甲状筋や周囲脂肪組織を越えて浸潤する</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">Ly, 0 1a 1b 1c</div>
+ <div class="body">
+  <div>D2-40推奨　不明瞭な場合は陰性にする</div>
+  <div>腫瘍胞巣の半周以上にD2-40陽性内皮細胞が確認できるものをLy1と判定する</div>
+  <br>
+  <div style="text-align:center">UICC/TNM第8版</div>
+  <div style="text-align:center">LyX　Ly0　Ly1</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">V, 0 1a 1b 1c</div>
+ <div class="body">
+  <div>Victoria blue HE、Elastica-van Gieson、CD31、CD34推奨</div>
+  <div>腫瘍胞巣の半周以上に弾性板が確認できるものをV1と判定する</div>
+  <br>
+  <div style="text-align:center">UICC/TNM第8版</div>
+  <div style="text-align:center">VX　V0　V1　V2</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">Pn, 0 1a 1b</div>
+ <div class="body">
+  <div>領域横断的規約　UICC/TNM第8版</div>
+  <div>PnX</div><div>Pn0　Pn0</div>
+  <div>Pn1a　軽度　Pn1</div>
+  <div>Pn1b　中等度</div><div>Pn1c　高度</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">pM X 0 1 pM1(LYM)</div>
+ <div class="body">
+  <div>＊ LYMの評価はリンパ節番号入力により自動判定されます。</div>
+  <br>
+  <div>！ UICC/TNM第8版では、pMXおよびpM0は不適切として使用しない（記載しない）ことになっている</div>
+  <br>
+  <div>＊ LYMリンパ節　SKI皮膚　PLU肺　MAR骨　OSS骨　PLE胸膜　BRA脳転移　MEN脳膜</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">被膜　所見のみ</div>
+ <div class="body">
+  <div>！ 被膜に完全に囲まれた乳頭癌を被包性乳頭癌という</div>
+  <div>！ 被膜を完全に突き破って周囲の被膜より突出した状態を被膜浸潤とする</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">血管浸潤　所見のみ</div>
+ <div class="body">
+  <div>！ 腫瘍内では評価しない。被膜内か被膜外で検討すること</div>
+  <div>腫瘍に血管内皮細胞が付着している、もしくは血栓が付着している場合を血管浸潤とする</div>
+  <br>
+  <div>！ 予後因子として全標本で4カ所以上の血管浸潤を有する</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">遺伝情報</div>
+ <div class="body">
+  <div>RET遺伝学的検査</div>
+  <div>両側多発性</div>
+  <div>非腫瘍部甲状腺にC細胞過形成がみられる</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">腫瘍の浸潤</div>
+ <div class="body">
+  <div>RX　　評価できない</div>
+  <div>R0　　遺残無し</div>
+  <div>R1　　顕微鏡的</div>
+  <div>R2　　肉眼的</div>
+ </div>
+</section>
+
+<section class="section info">
+ <div class="head">核分裂像</div>
+ <div class="body">！ 所見にのみ反映されます。</div>
+</section>
+
+<section class="section info">
+ <div class="head">切除断端</div>
+ <div class="body">！ 所見にのみ反映されます。</div>
+</section>
+
+</div>
+</main>
+
+<aside class="right">
+ <section class="rightbox">
+  <div class="righthead">Report</div>
+  <div id="report" class="reportcontent"></div>
+  <div class="rightfoot"><button onclick="copyReport()">Copy of this report</button></div>
+ </section>
+ <section class="rightbox">
+  <div class="righthead">Finding</div>
+  <div id="finding" class="findingcontent" contenteditable="true">Enter your findings here...</div>
+  <div class="rightfoot"><button onclick="copyFinding()">Copy of record</button></div>
+ </section>
+</aside>
+
+</div>
+
+<script>
+const report = document.getElementById('report');
+const finding = document.getElementById('finding');
+
+function selected(name){
+  const e=document.querySelector('input[name="'+name+'"]:checked');
+  return e ? e.value : '';
+}
+function checked(name){
+  return [...document.querySelectorAll('input[name="'+name+'"]:checked')].map(x=>x.value);
+}
+function val(id){const e=document.getElementById(id); return e && e.value.trim() ? e.value.trim() : ''}
+
+function updateReport(){
+  const lines=[];
+  const t=val('t'), n=val('n'), m=val('m'), stage=val('stage');
+  if(t||n||m||stage) lines.push('病期分類: '+[t?'T '+t:'',n?'N '+n:'',m?'M '+m:'',stage?'Stage '+stage:''].filter(Boolean).join(' / '));
+
+  const fields=[
+    ['占拠部位','site'],['数','number'],['深達度','depth'],['甲状腺外進展','capsule'],
+    ['腺外浸潤','vascular'],['リンパ管侵襲','nodes'],['神経周囲浸潤','nerve'],
+    ['遠隔転移','distant'],['被膜浸潤','pleura'],['血管浸潤','vessel'],
+    ['血管浸潤数','vesselnum'],['腫瘍の浸潤','invasion'],['切除断端','cut']
+  ];
+  fields.forEach(([label,name])=>{
+    const v=selected(name);
+    if(v) lines.push(label+': '+v);
+  });
+
+  const sizes=[];
+  if(val('long')) sizes.push('長径 '+val('long')+' mm');
+  if(val('short')) sizes.push('直交する短径 '+val('short')+' mm');
+  if(val('thick')) sizes.push('厚さ '+val('thick')+' mm');
+  if(sizes.length) lines.push('腫瘍の大きさ: '+sizes.join(' / '));
+
+  const distantSites=checked('SKI').concat(checked('PLU'),checked('MAR'),checked('OSS'),checked('PLE'),checked('BRA'),checked('ADR'),checked('HEP'),checked('OTH'),checked('PER'),checked('MEN'),checked('OVA'));
+  if(distantSites.length) lines.push('遠隔転移部位: '+distantSites.join(', '));
+  if(document.getElementById('d240').checked) lines.push('免疫組織学染色追加: D2-40');
+  if(document.getElementById('mitosisCheck').checked || val('mitosis')) lines.push('核分裂像: '+(val('mitosis') ? val('mitosis')+' 個/10HPF':'入力あり'));
+
+  report.textContent=lines.length ? lines.join('\\n') : '';
+}
+document.querySelectorAll('input').forEach(e=>e.addEventListener('change',updateReport));
+document.querySelectorAll('input[type=text],input[type=number]').forEach(e=>e.addEventListener('input',updateReport));
+
+function go(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+function copyReport(){
+ navigator.clipboard?.writeText(report.textContent || '');
+}
+function copyFinding(){
+ navigator.clipboard?.writeText(finding.innerText || '');
+}
+updateReport();
+</script>
+</body>
+</html>
